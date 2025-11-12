@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <title>Title</title>
+        <title>Pacientes</title>
         <!-- Required meta tags -->
         <meta charset="utf-8" />
         <meta
@@ -56,26 +56,90 @@
                 <div class="container-fluid" style="padding: 20px;">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-3">Filtrar por Etiqueta</h5>
-                        <div id="tags-filter-buttons" class="d-flex flex-wrap gap-2">
-                            <!-- Los botones de etiquetas se cargarán dinámicamente aquí -->
-                        </div>
+                        <h5 class="mb-3">Todos los Pacientes</h5>
                     </div>
                     <div class="card-body" style="max-height: calc(100vh - 300px); overflow-y: auto;">
                         <div class="alert alert-secondary mb-0 mt-0 py-2">
-                            <div class="row align-items-center text-center">
-                                <div class="col-1 text-start"><b><i class="fa-solid fa-check"></i></b></div>
-                                <div class="col-4 text-start"><b>Pacientes</b></div>
-                                <div class="col-2 text-start"><b>IdPaciente</b></div>
-                                <div class="col-2 text-start"><b>Estado</b></div>
-                                <div class="col-3 text-center"><b>Habitacion</b></div>
-                                <div class="col-3 text-center"><b>Medicacion</b></div>
-                                <div class="col-3 text-center"><b>Siguiente Sesion</b></div>
-                                <div class="col-3 text-center"><b>Editar</b></div>
+                            <div class="patients-header text-center w-100">
+                                <div class="header-cell"><b><i class="fa-solid fa-check"></i></b></div>
+                                <div class="header-cell"><b>Pacientes</b></div>
+                                <div class="header-cell"><b>IdPaciente</b></div>
+                                <div class="header-cell"><b>Estado</b></div>
+                                <div class="header-cell"><b>Habitacion</b></div>
+                                <div class="header-cell"><b>Medicacion</b></div>
+                                <div class="header-cell"><b>Siguiente Sesion</b></div>
+                                <div class="header-cell"><b>Editar</b></div>
                             </div>
                         </div>
-                        <div id="all-tasks-container">
-                            <!-- Las tareas se cargarán dinámicamente aquí -->
+                        <div id="all-patients-container">
+                            <div class="alert alert-info mb-1 py-2" id="patient1">
+                                <div class="patients-row">
+                                    <div class="patient-cell checkbox-cell">
+                                        <input type="checkbox" class="form-check-input patients-check" data-patient-id="patient1" aria-label="Seleccionar paciente Ramiro">
+                                    </div>
+                                    <div class="patient-cell"><p class="patient-name mb-0">Ramiro</p></div>
+                                    <div class="patient-cell"><p class="patient-id mb-0">562458</p></div>
+                                    <div class="patient-cell"><span class="badge rounded-pill bg-warning">Inestable</span></div>
+                                    <div class="patient-cell">212</div>
+                                    <div class="patient-cell">Anavar</div>
+                                    <div class="patient-cell">Pendiente</div>
+                                    <div class="patient-cell actions-cell">
+                                        <!-- Botones de edición -->
+                                        <button type="button" class="btn btn-danger btn-icon btn-sm" title="Eliminar" aria-label=" ">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-icon btn-sm" title="Editar" aria-label=" ">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mb-1 py-2" id="patient2">
+                                <div class="patients-row">
+                                    <div class="patient-cell checkbox-cell">
+                                        <input type="checkbox" class="form-check-input patients-check" data-patient-id="patient2" aria-label="Seleccionar paciente Ramiro">
+                                    </div>
+                                    <div class="patient-cell"><p class="patient-name mb-0">Alice</p></div>
+                                    <div class="patient-cell"><p class="patient-id mb-0">178525</p></div>
+                                    <div class="patient-cell"><span class="badge rounded-pill bg-danger">Peligro</span></div>
+                                    <div class="patient-cell">001</div>
+                                    <div class="patient-cell">Todo</div>
+                                    <div class="patient-cell">Mañana</div>
+                                    <div class="patient-cell actions-cell">
+                                        <!-- Botones de edición -->
+                                        <button type="button" class="btn btn-danger btn-icon btn-sm" title="Eliminar" aria-label=" ">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-icon btn-sm" title="Editar" aria-label=" ">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mb-1 py-2" id="patient3">
+                                <div class="patients-row">
+                                    <div class="patient-cell checkbox-cell">
+                                        <input type="checkbox" class="form-check-input patients-check" data-patient-id="patient3" aria-label="Seleccionar paciente Ramiro">
+                                    </div>
+                                    <div class="patient-cell"><p class="patient-name mb-0">Dorx</p></div>
+                                    <div class="patient-cell"><p class="patient-id mb-0">696969</p></div>
+                                    <div class="patient-cell"><span class="badge rounded-pill bg-success">Amigable</span></div>
+                                    <div class="patient-cell">315</div>
+                                    <div class="patient-cell">Trenbolona</div>
+                                    <div class="patient-cell">Sabado</div>
+                                    <div class="patient-cell actions-cell">
+                                        <!-- Botones de edición -->
+                                        <button type="button" class="btn btn-danger btn-icon btn-sm" title="Eliminar" aria-label=" ">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-icon btn-sm" title="Editar" aria-label=" ">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -16,6 +16,15 @@
             integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
             crossorigin="anonymous"
         />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link
+            rel="stylesheet"
+            href="meds.css"
+        />
+        <link
+            rel="stylesheet"
+            href="modal.css"
+        />
     </head>
 
     <body>
@@ -43,7 +52,154 @@
         </header>
         <main>
             <div class="box">
-                <!-- Content here -->
+                
+                <div class="container-fluid" style="padding: 20px;">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-3">Todos los Medicamentos</h5>
+                        </div>
+                        <div class="card-body" style="max-height: calc(100vh - 300px); overflow-y: auto;">
+                            <div class="alert alert-secondary mb-0 mt-0 py-2">
+                                <div class="meds-header text-center w-100">
+                                    <div class="header-cell"><b><i class="fa-solid fa-check"></i></b></div>
+                                    <div class="header-cell"><b>Medicamento</b></div>
+                                    <div class="header-cell"><b>Id</b></div>
+                                    <div class="header-cell"><b>Dosis</b></div>
+                                    <div class="header-cell"><b>Stock</b></div>
+                                    <div class="header-cell"><b>Acciones</b></div>
+                                </div>
+                            </div>
+                            <div id="all-patients-container">
+                            <div class="alert alert-info mb-1 py-2" id="medicamento1">
+                                <div class="meds-row">
+                                    <div class="meds-cell checkbox-cell">
+                                        <input type="checkbox" class="form-check-input patients-check" data-patient-id="medicamento1" aria-label="Seleccionar medicamento Trenbolona">
+                                    </div>
+                                    <div class="meds-cell"><p class="patient-name mb-0">Trenbolona</p></div>
+                                    <div class="meds-cell"><p class="patient-id mb-0">25</p></div>
+                                    <div class="meds-cell"><span class="badge rounded-pill bg-danger">500mg</span></div>
+                                    <div class="meds-cell">212</div>
+                                    <div class="meds-cell actions-cell">
+                                        <!-- Botones de edición -->
+                                        <button type="button" class="btn btn-danger btn-icon btn-sm" title="Eliminar" aria-label=" ">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-icon btn-sm" title="Editar" aria-label=" ">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mb-1 py-2" id="medicamento2">
+                                <div class="meds-row">
+                                    <div class="meds-cell checkbox-cell">
+                                        <input type="checkbox" class="form-check-input patients-check" data-patient-id="medicamento2" aria-label="Seleccionar medicamento Trenbolona">
+                                    </div>
+                                    <div class="meds-cell"><p class="patient-name mb-0">Dianabol</p></div>
+                                    <div class="meds-cell"><p class="patient-id mb-0">12</p></div>
+                                    <div class="meds-cell"><span class="badge rounded-pill bg-warning">150mg</span></div>
+                                    <div class="meds-cell">630</div>
+                                    <div class="meds-cell actions-cell">
+                                        <!-- Botones de edición -->
+                                        <button type="button" class="btn btn-danger btn-icon btn-sm" title="Eliminar" aria-label=" ">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-icon btn-sm" title="Editar" aria-label=" ">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mb-1 py-2" id="medicamento3">
+                                <div class="meds-row">
+                                    <div class="meds-cell checkbox-cell">
+                                        <input type="checkbox" class="form-check-input patients-check" data-patient-id="medicamento3" aria-label="Seleccionar medicamento Trenbolona">
+                                    </div>
+                                    <div class="meds-cell"><p class="patient-name mb-0">Morfina</p></div>
+                                    <div class="meds-cell"><p class="patient-id mb-0">36</p></div>
+                                    <div class="meds-cell"><span class="badge rounded-pill bg-danger">50mg</span></div>
+                                    <div class="meds-cell">1000</div>
+                                    <div class="meds-cell actions-cell">
+                                        <!-- Botones de edición -->
+                                        <button type="button" class="btn btn-danger btn-icon btn-sm" title="Eliminar" aria-label=" ">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-icon btn-sm" title="Editar" aria-label=" ">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mb-1 py-2" id="medicamento4">
+                                <div class="meds-row">
+                                    <div class="meds-cell checkbox-cell">
+                                        <input type="checkbox" class="form-check-input patients-check" data-patient-id="medicamento4" aria-label="Seleccionar medicamento Trenbolona">
+                                    </div>
+                                    <div class="meds-cell"><p class="patient-name mb-0">Keterolaco</p></div>
+                                    <div class="meds-cell"><p class="patient-id mb-0">333</p></div>
+                                    <div class="meds-cell"><span class="badge rounded-pill bg-success">75mg</span></div>
+                                    <div class="meds-cell">723</div>
+                                    <div class="meds-cell actions-cell">
+                                        <!-- Botones de edición -->
+                                        <button type="button" class="btn btn-danger btn-icon btn-sm" title="Eliminar" aria-label=" ">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-icon btn-sm" title="Editar" aria-label=" ">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mb-1 py-2" id="medicamento5">
+                                <div class="meds-row">
+                                    <div class="meds-cell checkbox-cell">
+                                        <input type="checkbox" class="form-check-input patients-check" data-patient-id="medicamento5" aria-label="Seleccionar medicamento Trenbolona">
+                                    </div>
+                                    <div class="meds-cell"><p class="patient-name mb-0">Laudano</p></div>
+                                    <div class="meds-cell"><p class="patient-id mb-0">2</p></div>
+                                    <div class="meds-cell"><span class="badge rounded-pill bg-danger">1000mg</span></div>
+                                    <div class="meds-cell">666</div>
+                                    <div class="meds-cell actions-cell">
+                                        <!-- Botones de edición -->
+                                        <button type="button" class="btn btn-danger btn-icon btn-sm" title="Eliminar" aria-label=" ">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-icon btn-sm" title="Editar" aria-label=" ">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="alert alert-info mb-1 py-2" id="medicamento6">
+                                <div class="meds-row">
+                                    <div class="meds-cell checkbox-cell">
+                                        <input type="checkbox" class="form-check-input patients-check" data-patient-id="medicamento6" aria-label="Seleccionar medicamento Trenbolona">
+                                    </div>
+                                    <div class="meds-cell"><p class="patient-name mb-0">Cocaina</p></div>
+                                    <div class="meds-cell"><p class="patient-id mb-0">9</p></div>
+                                    <div class="meds-cell"><span class="badge rounded-pill bg-danger">25mg</span></div>
+                                    <div class="meds-cell">20</div>
+                                    <div class="meds-cell actions-cell">
+                                        <!-- Botones de edición -->
+                                        <button type="button" class="btn btn-danger btn-icon btn-sm" title="Eliminar" aria-label=" ">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-icon btn-sm" title="Editar" aria-label=" ">
+                                            <i class="fa-solid fa-pen"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             </div>
         </main>
         <footer>

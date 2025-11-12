@@ -3,3 +3,46 @@
     height: 100vh;
     background-image: linear-gradient(to top, #429ea6, #B0B2B8);
 }
+
+/* Unified grid layout for header and rows */
+.patients-header{
+    display:grid;
+    grid-template-columns:48px repeat(6, 1fr) 96px;
+    align-items:center;
+    column-gap:8px;
+}
+.patients-header .header-cell{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:32px;
+}
+.patients-header .header-cell:first-child{ justify-content:flex-start; }
+.patients-header .header-cell:last-child{ justify-content:center; }
+
+/* Patients row (data) layout mirrors header */
+.patients-row{
+    display:grid;
+    grid-template-columns:48px repeat(6, 1fr) 96px;
+    align-items:center;
+    column-gap:8px;
+}
+.patients-row .patient-cell{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:32px;
+}
+.patients-row .patient-cell.checkbox-cell{ justify-content:flex-start; }
+.patients-row .patient-cell.actions-cell{ gap:8px; justify-content:center; }
+.patients-row .patient-cell.actions-cell button{ flex:1 1 auto; }
+
+/* Icon button styles */
+.btn-icon{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:6px 10px;
+    line-height:1;
+}
+.btn-icon i{ pointer-events:none; }

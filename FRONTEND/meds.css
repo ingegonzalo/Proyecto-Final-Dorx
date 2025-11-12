@@ -3,3 +3,45 @@
     height: 100vh;
     background-image: linear-gradient(to top, #429ea6, #B0B2B8);
 }
+
+/* Unified grid layout for meds header and rows */
+.meds-header{
+    display:grid;
+    grid-template-columns:48px repeat(4, 1fr) 96px;
+    align-items:center;
+    column-gap:8px;
+}
+.meds-header .header-cell{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:32px;
+}
+.meds-header .header-cell:first-child{ justify-content:flex-start; }
+.meds-header .header-cell:last-child{ justify-content:center; }
+
+.meds-row{
+    display:grid;
+    grid-template-columns:48px repeat(4, 1fr) 96px;
+    align-items:center;
+    column-gap:8px;
+}
+.meds-row .meds-cell{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:32px;
+}
+.meds-row .meds-cell.checkbox-cell{ justify-content:flex-start; }
+.meds-row .meds-cell.actions-cell{ gap:8px; justify-content:center; }
+.meds-row .meds-cell.actions-cell button{ flex:1 1 auto; }
+
+/* Icon button styles */
+.btn-icon{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:6px 10px;
+    line-height:1;
+}
+.btn-icon i{ pointer-events:none; }
