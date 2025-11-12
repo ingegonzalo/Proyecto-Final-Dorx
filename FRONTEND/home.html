@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <title>Home Page</title>
+        <title>CRUD</title>
         <!-- Required meta tags -->
         <meta charset="utf-8" />
         <meta
@@ -25,34 +25,196 @@
             href="modal.css"
         />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <link rel="stylesheet" href="style.css" />
     </head>
 
-    <body>
-        <header>
-            <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-                <div class="container-fluid">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-                    <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="mynavbar">
-                    <ul class="navbar-nav me-auto">
-                        <a class="nav-link" href="home.html">Home</a>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark">           
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mynavbar">
+                
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="home.html">Home</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="patients.html">Pacientes</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="meds.html">Medicamentos</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="appointment.html">Citas</a>
-                    </ul>
-                    <div class="boton-modal">
-                        <label for="boton-modal" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
-                            <i class="fa-solid fa-right-from-bracket fa-lg" aria-hidden="true"></i>
-                        </label>
-                    </div> 
+                    </li>
+                </ul>
+                
+                <div class="boton-modal">
+                    <label for="boton-modal" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
+                        <i class="fa-solid fa-right-from-bracket fa-lg" aria-hidden="true"></i>
+                    </label>
                 </div>
-            </nav>
-        </header>
-        <main>
-            <div class = "box">
-                <!-- Logout Modal (checkbox-controlled) -->
-                <input type="checkbox" id="boton-modal" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <main class="container-fluid p-3" style="background-color: #f4f4f4;">
+
+        <div class="row g-3">
+            
+            <div class="col-md-8">
+                <div class="bg-light p-3 rounded">
+                    <h5> HORARIO DEL DOCTOR</h5>
+                    
+                    <div class="table-responsive mt-3">
+                        <table class="table table-bordered text-center">
+                            <thead class="table-group-divider">
+                                <tr>
+                                    <th style="width: 10%;">Hora</th>
+                                    <th>LUN 10</th>
+                                    <th class="table-primary">MAR 11</th>
+                                    <th>MIÉ 12</th>
+                                    <th>JUE 13</th>
+                                    <th>VIE 14</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                <tr>
+                                    <td>9:00 AM</td>
+                                    <td></td>
+                                    <td>
+                                        <div class="bg-primary text-white p-2 rounded small">
+                                            <strong>Cita:</strong> Ramiro
+                                        </div>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>10:00 AM</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <div class="bg-success text-white p-2 rounded small">
+                                            <strong>Cita:</strong> María O.
+                                        </div>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>11:00 AM</td>
+                                    <td>
+                                        <div class="bg-secondary text-white p-2 rounded small">
+                                            <strong>Cita:</strong> Paciente X
+                                        </div>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>12:00 PM</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+<div class="col-md-4">
+    <div class="bg-light p-3 rounded" style="min-height: 400px;">
+        <h5>Estado del Paciente</h5>
+        
+        <div class="text-center mt-3">
+            
+            <h4 class="mt-2">Ramiro</h4>
+            <p>Paciente ID: 562458</p>
+        </div>
+
+        <ul class="list-group list-group-flush mt-3">
+            <li class="list-group-item d-flex justify-content-between">
+                <strong>Estado:</strong>
+                <span class="badge bg-primary rounded-pill">Inestable</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                <strong>Habitación:</strong>
+                <span>212</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                <strong>Medicación:</strong>
+                <span>Anavar</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                <strong>Próxima Cita:</strong>
+                <span>Hoy, 9:00 AM</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                <strong>Doctor:</strong>
+                <span>Dr. Ulises</span>
+            </li>
+        </ul>
+
+    </div>
+</div>
+        </div>
+
+        <div class="row g-3 mt-3">
+            <div class="col-md-4">
+                <a href="meds.html" class="text-decoration-none text-dark">
+                    <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
+                        <h4>CRUD Meds</h4>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="patients.html" class="text-decoration-none text-dark">
+                    <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
+                        <h4>CRUD Paciente</h4>
+                    </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="appointment.html" class="text-decoration-none text-dark">
+                    <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
+                        <h4>CRUD Citas</h4>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Cerrar sesión</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Seguro que deseas cerrar sesión?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <a class="btn btn-primary" href="login.html">Cerrar Sesión</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <input type="checkbox" id="boton-modal" />
                 <div class="container-modal">
                     <div class="content-modal position-relative">
                         <button class="close-modal" aria-label="Cerrar" title="Cerrar" onclick="document.getElementById('boton-modal').checked=false;">×</button>
@@ -64,22 +226,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </main>
-        <footer>
-            <!-- place footer here -->
-        </footer>
-        <!-- Bootstrap JavaScript Libraries -->
-        <script
-            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-            crossorigin="anonymous"
-        ></script>
+    </footer>
 
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-            crossorigin="anonymous"
-        ></script>
-    </body>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+</body>
 </html>
