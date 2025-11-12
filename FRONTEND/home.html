@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <title>Home Page</title>
+        <title>CRUD</title>
         <!-- Required meta tags -->
         <meta charset="utf-8" />
         <meta
@@ -28,226 +28,105 @@
         <link rel="stylesheet" href="style.css" />
     </head>
 
-    <body>
-        <header>
-            <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-                <div class="container-fluid">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-                    <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="mynavbar">
-                    <ul class="navbar-nav me-auto">
-                        <a class="nav-link" href="home.html">Home</a>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-light bg-light border-bottom">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+                <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="mynavbar">
+                
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="home.html" style="color: #8a2be2; font-weight: bold;">Home</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="patients.html">Pacientes</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="meds.html">Medicamentos</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="appointment.html">Citas</a>
-                    </ul>
-                <div class="boton-modal">
-                <label for="boton-modal" class="nav-link" style="cursor: pointer; font-weight: bold;" title="Cerrar sesión">
-                    LogOut
-                </label>
-            </div>
+                    </li>
+                </ul>
+                
+<div>
+    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal" style="cursor: pointer;" title="Cerrar sesión" aria-label="Cerrar sesión">
+        <i class="fa-solid fa-right-from-bracket fa-lg" aria-hidden="true"></i>
+    </a>
+</div>
                 </div>
-            </nav>
-        </header>
-        
-<main class="container-fluid p-3" style="background-color: #f4f4f4;">
+            </div>
+        </nav>
+    </header>
+    
+    <main class="container-fluid p-3" style="background-color: #f4f4f4;">
 
-    <div class="row g-3">
-        
-        <div class="col-md-8">
-            <div class="bg-light p-3 rounded" style="min-height: 400px;">
-                <h5>HORARIO DEL DOCTOR</h5>
+        <div class="row g-3">
+            <div class="col-md-8">
+                <div class="bg-light p-3 rounded" style="min-height: 400px;">
+                    <h5>Horario Del Doctor</h5>
+                    </div>
+            </div>
+            <div class="col-md-4">
+                <div class="bg-light p-3 rounded" style="min-height: 400px;">
+                    <h5>Estado del Paciente</h5>
+                    </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="bg-light p-3 rounded" style="min-height: 400px;">
-                <h5>Estado del Paciente</h5>
-            </div>
-        </div>
-    </div> <div class="row g-3 mt-3">
-        
-        <div class="col-md-4">
-            <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
-                <h4>CRUD Meds</h4>
-            </div>
-        </div>
+            <div class="row g-3 mt-3">
 
-        <div class="col-md-4">
-            <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
-                <h4>CRUD Paciente</h4>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
-                <h4>CRUD Citas</h4>
-            </div>
-        </div>
-
-    </div> <div class="box">
-        <input type="checkbox" id="boton-modal" />
-        <div class="container-modal">
-            </div>
-    </div>
-</main>
-            <div class = "box">
-                <!-- Logout Modal (checkbox-controlled) -->
-                <input type="checkbox" id="boton-modal" />
-                <div class="container-modal">
-                    <div class="content-modal position-relative">
-                        <button class="close-modal" aria-label="Cerrar" title="Cerrar" onclick="document.getElementById('boton-modal').checked=false;">×</button>
-                        <h2 class="h5 mb-3">Cerrar sesión</h2>
-                        <p>¿Seguro que deseas cerrar sesión?</p>
-                        <div class="modal-footer btns d-flex gap-2 justify-content-end">
-                            <label id="btn-cancelar" for="boton-modal" class="btn btn-secondary">Cancelar</label>
-                            <a id="btn-logout" class="btn btn-primary" href="login.html">Cerrar Sesión</a>
+                <div class="col-md-4">
+                    <a href="meds.html" class="text-decoration-none text-dark">
+                        <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
+                            <h4>CRUD Meds</h4>
                         </div>
+                    </a>
+                </div>
+
+                <div class="col-md-4">
+                    <a href="patients.html" class="text-decoration-none text-dark">
+                        <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
+                            <h4>CRUD Paciente</h4>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="col-md-4">
+                    <a href="appointment.html" class="text-decoration-none text-dark">
+                        <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
+                            <h4>CRUD Citas</h4>
+                        </div>
+                    </a>
+                </div>
+            </div>
+    </main>
+
+        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLabel">Cerrar sesión</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        ¿Seguro que deseas cerrar sesión?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <a class="btn btn-primary" href="login.html">Cerrar Sesión</a>
                     </div>
                 </div>
             </div>
-        </main>
-        <footer>
-            <!-- place footer here -->
+        </div>
+
+    <footer>
         </footer>
-        <!-- Bootstrap JavaScript Libraries -->
-        <script
-            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-            crossorigin="anonymous"
-        ></script>
 
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-            crossorigin="anonymous"
-        ></script>
-    </body>
-</html><!doctype html>
-<html lang="en">
-    <head>
-        <title>Home Page</title>
-        <!-- Required meta tags -->
-        <meta charset="utf-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1, shrink-to-fit=no"
-        />
-
-        <!-- Bootstrap CSS v5.2.1 -->
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
-            crossorigin="anonymous"
-        />
-        <link
-            rel="stylesheet"
-            href="home.css"
-        />
-        <link
-            rel="stylesheet"
-            href="modal.css"
-        />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <link rel="stylesheet" href="style.css" />
-    </head>
-
-    <body>
-        <header>
-            <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-                <div class="container-fluid">
-                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
-                    <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="mynavbar">
-                    <ul class="navbar-nav me-auto">
-                        <a class="nav-link" href="home.html">Home</a>
-                        <a class="nav-link" href="patients.html">Pacientes</a>
-                        <a class="nav-link" href="meds.html">Medicamentos</a>
-                        <a class="nav-link" href="appointment.html">Citas</a>
-                    </ul>
-                <div class="boton-modal">
-                <label for="boton-modal" class="nav-link" style="cursor: pointer; font-weight: bold;" title="Cerrar sesión">
-                    LogOut
-                </label>
-            </div>
-                </div>
-            </nav>
-        </header>
-        
-<main class="container-fluid p-3" style="background-color: #f4f4f4;">
-
-    <div class="row g-3">
-        
-        <div class="col-md-8">
-            <div class="bg-light p-3 rounded" style="min-height: 400px;">
-                <h5>HORARIO DEL DOCTOR</h5>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="bg-light p-3 rounded" style="min-height: 400px;">
-                <h5>Estado del Paciente</h5>
-            </div>
-        </div>
-    </div> <div class="row g-3 mt-3">
-        
-        <div class="col-md-4">
-            <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
-                <h4>CRUD Meds</h4>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
-                <h4>CRUD Paciente</h4>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
-                <h4>CRUD Citas</h4>
-            </div>
-        </div>
-
-    </div> <div class="box">
-        <input type="checkbox" id="boton-modal" />
-        <div class="container-modal">
-            </div>
-    </div>
-</main>
-            <div class = "box">
-                <!-- Logout Modal (checkbox-controlled) -->
-                <input type="checkbox" id="boton-modal" />
-                <div class="container-modal">
-                    <div class="content-modal position-relative">
-                        <button class="close-modal" aria-label="Cerrar" title="Cerrar" onclick="document.getElementById('boton-modal').checked=false;">×</button>
-                        <h2 class="h5 mb-3">Cerrar sesión</h2>
-                        <p>¿Seguro que deseas cerrar sesión?</p>
-                        <div class="modal-footer btns d-flex gap-2 justify-content-end">
-                            <label id="btn-cancelar" for="boton-modal" class="btn btn-secondary">Cancelar</label>
-                            <a id="btn-logout" class="btn btn-primary" href="login.html">Cerrar Sesión</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-        <footer>
-            <!-- place footer here -->
-        </footer>
-        <!-- Bootstrap JavaScript Libraries -->
-        <script
-            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
-            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
-            crossorigin="anonymous"
-        ></script>
-
-        <script
-            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
-            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
-            crossorigin="anonymous"
-        ></script>
-    </body>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+</body>
 </html>
