@@ -35,7 +35,7 @@
                         <a class="nav-link" href="home.html">Home</a>
                         <a class="nav-link" href="patients.html">Pacientes</a>
                         <a class="nav-link" href="meds.html">Medicamentos</a>
-                        <a class="nav-link" href="appointments.html">Citas</a>
+                        <a class="nav-link" href="appointment.html">Citas</a>
                     </ul>
                     <div class="boton-modal">
                         <label for="boton-modal" class="logout-btn" title="Cerrar sesión" aria-label="Cerrar sesión">
@@ -47,6 +47,19 @@
         </header>
         <main>
             <div class = "box">
+                <!-- Logout Modal (checkbox-controlled) -->
+                <input type="checkbox" id="boton-modal" />
+                <div class="container-modal">
+                    <div class="content-modal position-relative">
+                        <button class="close-modal" aria-label="Cerrar" title="Cerrar" onclick="document.getElementById('boton-modal').checked=false;">×</button>
+                        <h2 class="h5 mb-3">Cerrar sesión</h2>
+                        <p>¿Seguro que deseas cerrar sesión?</p>
+                        <div class="modal-footer btns d-flex gap-2 justify-content-end">
+                            <label id="btn-cancelar" for="boton-modal" class="btn btn-secondary">Cancelar</label>
+                            <a id="btn-logout" class="btn btn-primary" href="login.html">Cerrar Sesión</a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
         <footer>
