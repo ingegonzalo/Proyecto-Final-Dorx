@@ -52,11 +52,11 @@
                     </li>
                 </ul>
                 
-<div>
-    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal" style="cursor: pointer;" title="Cerrar sesión" aria-label="Cerrar sesión">
-        <i class="fa-solid fa-right-from-bracket fa-lg" aria-hidden="true"></i>
-    </a>
-</div>
+                <div>
+                    <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal" style="cursor: pointer;" title="Cerrar sesión" aria-label="Cerrar sesión">
+                        <i class="fa-solid fa-right-from-bracket fa-lg" aria-hidden="true"></i>
+                    </a>
+                </div>
                 </div>
             </div>
         </nav>
@@ -65,66 +65,156 @@
     <main class="container-fluid p-3" style="background-color: #f4f4f4;">
 
         <div class="row g-3">
+            
             <div class="col-md-8">
-                <div class="bg-light p-3 rounded" style="min-height: 400px;">
-                    <h5>Horario Del Doctor</h5>
+                <div class="bg-light p-3 rounded">
+                    <h5> HORARIO DEL DOCTOR</h5>
+                    
+                    <div class="table-responsive mt-3">
+                        <table class="table table-bordered text-center">
+                            <thead class="table-group-divider">
+                                <tr>
+                                    <th style="width: 10%;">Hora</th>
+                                    <th>LUN 10</th>
+                                    <th class="table-primary">MAR 11</th>
+                                    <th>MIÉ 12</th>
+                                    <th>JUE 13</th>
+                                    <th>VIE 14</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                <tr>
+                                    <td>9:00 AM</td>
+                                    <td></td>
+                                    <td>
+                                        <div class="bg-primary text-white p-2 rounded small">
+                                            <strong>Cita:</strong> Andrés Sandoval
+                                        </div>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>10:00 AM</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <div class="bg-success text-white p-2 rounded small">
+                                            <strong>Cita:</strong> María O.
+                                        </div>
+                                    </td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>11:00 AM</td>
+                                    <td>
+                                        <div class="bg-secondary text-white p-2 rounded small">
+                                            <strong>Cita:</strong> Paciente X
+                                        </div>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>12:00 PM</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
+                </div>
+            </div>
+            
+<div class="col-md-4">
+    <div class="bg-light p-3 rounded" style="min-height: 400px;">
+        <h5>Estado del Paciente</h5>
+        
+        <div class="text-center mt-3">
+            
+            <h4 class="mt-2">Andrés Sandoval</h4>
+            <p>Paciente ID: 562458</p>
+        </div>
+
+        <ul class="list-group list-group-flush mt-3">
+            <li class="list-group-item d-flex justify-content-between">
+                <strong>Estado:</strong>
+                <span class="badge bg-primary rounded-pill">Estable</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                <strong>Habitación:</strong>
+                <span>212</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                <strong>Medicación:</strong>
+                <span>Paracetamol (500mg)</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                <strong>Próxima Cita:</strong>
+                <span>Hoy, 9:00 AM</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between">
+                <strong>Doctor:</strong>
+                <span>Dr. Ulises</span>
+            </li>
+        </ul>
+
+    </div>
+</div>
+        </div>
+
+        <div class="row g-3 mt-3">
+            <div class="col-md-4">
+                <a href="meds.html" class="text-decoration-none text-dark">
+                    <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
+                        <h4>CRUD Meds</h4>
+                    </div>
+                </a>
             </div>
             <div class="col-md-4">
-                <div class="bg-light p-3 rounded" style="min-height: 400px;">
-                    <h5>Estado del Paciente</h5>
+                <a href="patients.html" class="text-decoration-none text-dark">
+                    <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
+                        <h4>CRUD Paciente</h4>
                     </div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="appointment.html" class="text-decoration-none text-dark">
+                    <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
+                        <h4>CRUD Citas</h4>
+                    </div>
+                </a>
             </div>
         </div>
-
-            <div class="row g-3 mt-3">
-
-                <div class="col-md-4">
-                    <a href="meds.html" class="text-decoration-none text-dark">
-                        <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
-                            <h4>CRUD Meds</h4>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="col-md-4">
-                    <a href="patients.html" class="text-decoration-none text-dark">
-                        <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
-                            <h4>CRUD Paciente</h4>
-                        </div>
-                    </a>
-                </div>
-
-                <div class="col-md-4">
-                    <a href="appointment.html" class="text-decoration-none text-dark">
-                        <div class="bg-light p-3 rounded d-flex align-items-center justify-content-center" style="min-height: 120px;">
-                            <h4>CRUD Citas</h4>
-                        </div>
-                    </a>
-                </div>
-            </div>
     </main>
 
-        <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalLabel">Cerrar sesión</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                        ¿Seguro que deseas cerrar sesión?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <a class="btn btn-primary" href="login.html">Cerrar Sesión</a>
-                    </div>
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Cerrar sesión</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    ¿Seguro que deseas cerrar sesión?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <a class="btn btn-primary" href="login.html">Cerrar Sesión</a>
                 </div>
             </div>
         </div>
+    </div>
 
     <footer>
-        </footer>
+    </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
