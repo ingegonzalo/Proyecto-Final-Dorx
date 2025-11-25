@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="patient-cell">${patient.meds.length} meds</div>
                             <div class="patient-cell">${new Date(patient.next_checkup).toLocaleDateString()}</div>
                             <div class="patient-cell actions-cell">
+                                <!-- Agregamos el botón de Editar aquí -->
+                                <button class="btn btn-primary btn-sm me-1" onclick="editPatient(${patient.id})"><i class="fa-solid fa-pen"></i></button>
                                 <button class="btn btn-danger btn-sm" onclick="deletePatient(${patient.id})"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
@@ -36,6 +38,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (status === 'Peligroso') return 'danger';
         return 'success';
     }
+
+    // Función para editar
+    window.editPatient = function(id) {
+        const newStatus = prompt("Actualizar estado (Amigable, Inestable, Peligroso):");
+        if (newStatus) {
+            fetch(`/api/patients/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: newStatus })
+            })
+            .then(res => {
+                if(res.ok) loadPatients();
+                else alert('Error al actualizar');
+            })
+            .catch(err => console.error(err));
+        }
+    };
 
     window.deletePatient = function(id) {
         if(confirm('¿Estás seguro de eliminar este paciente?')) {
