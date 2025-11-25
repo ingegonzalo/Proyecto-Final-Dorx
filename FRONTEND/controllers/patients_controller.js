@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('all-patients-container');
+    let patientsList = []; // 1. Variable para guardar los datos actuales
 
     function loadPatients() {
         fetch('/api/patients/all')
             .then(response => response.json())
             .then(patients => {
+                patientsList = patients; // Guardamos los datos en la variable global
                 container.innerHTML = '';
                 patients.forEach(patient => {
                     const patientCard = document.createElement('div');
@@ -21,7 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="patient-cell">${patient.meds.length} meds</div>
                             <div class="patient-cell">${new Date(patient.next_checkup).toLocaleDateString()}</div>
                             <div class="patient-cell actions-cell">
-                                <!-- Agregamos el botón de Editar aquí -->
                                 <button class="btn btn-primary btn-sm me-1" onclick="editPatient(${patient.id})"><i class="fa-solid fa-pen"></i></button>
                                 <button class="btn btn-danger btn-sm" onclick="deletePatient(${patient.id})"><i class="fa-solid fa-trash"></i></button>
                             </div>
@@ -39,21 +40,43 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'success';
     }
 
-    // Función para editar
+    // 2. Función de editar mejorada (Edita Nombre, Habitación y Estado)
     window.editPatient = function(id) {
-        const newStatus = prompt("Actualizar estado (Amigable, Inestable, Peligroso):");
-        if (newStatus) {
-            fetch(`/api/patients/${id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: newStatus })
-            })
-            .then(res => {
-                if(res.ok) loadPatients();
-                else alert('Error al actualizar');
-            })
-            .catch(err => console.error(err));
-        }
+        // Buscamos al paciente actual en nuestra lista guardada
+        const currentPatient = patientsList.find(p => p.id === id);
+        
+        if (!currentPatient) return;
+
+        // Pedimos los datos uno por uno, mostrando el valor actual por defecto
+        const newName = prompt("Editar Nombre:", currentPatient.name);
+        if (newName === null) return; // Si cancela, salimos
+
+        const newRoom = prompt("Editar Habitación:", currentPatient.room_number);
+        if (newRoom === null) return;
+
+        const newStatus = prompt("Editar Estado (Amigable, Inestable, Peligroso):", currentPatient.status);
+        if (newStatus === null) return;
+
+        // Creamos el objeto con los nuevos datos
+        const updatedData = {
+            name: newName,
+            room_number: newRoom,
+            status: newStatus
+        };
+
+        fetch(`/api/patients/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedData)
+        })
+        .then(res => {
+            if(res.ok) {
+                loadPatients();
+            } else {
+                alert('Error al actualizar el paciente');
+            }
+        })
+        .catch(err => console.error(err));
     };
 
     window.deletePatient = function(id) {
