@@ -1,4 +1,4 @@
-const local_url = "http://localhost:696969/";
+const local_url = "http://localhost:3000/";
 
 if (typeof window !== 'undefined' && typeof sessionStorage !== 'undefined') {
     document.addEventListener('DOMContentLoaded', () => {
