@@ -1,1 +1,56 @@
-[]
+[
+    {
+        "id": 1,
+        "name": "Juan Pérez López",
+        "room_number": 101,
+        "status": "Amigable",
+        "doctor": 1,
+        "meds": [1, 2],
+        "next_checkup": "2025-11-26T10:00:00.000Z"
+    },
+    {
+        "id": 2,
+        "name": "María Rodríguez García",
+        "room_number": 102,
+        "status": "Inestable",
+        "doctor": 2,
+        "meds": [3, 4],
+        "next_checkup": "2025-11-25T15:30:00.000Z"
+    },
+    {
+        "id": 3,
+        "name": "Pedro Sánchez Díaz",
+        "room_number": 103,
+        "status": "Peligroso",
+        "doctor": 1,
+        "meds": [2, 3, 5],
+        "next_checkup": "2025-11-25T18:00:00.000Z"
+    },
+    {
+        "id": 4,
+        "name": "Ana Torres Ruiz",
+        "room_number": 201,
+        "status": "Amigable",
+        "doctor": 3,
+        "meds": [1],
+        "next_checkup": "2025-11-27T09:00:00.000Z"
+    },
+    {
+        "id": 5,
+        "name": "Carlos Jiménez Morales",
+        "room_number": 202,
+        "status": "Inestable",
+        "doctor": 2,
+        "meds": [4, 5],
+        "next_checkup": "2025-11-26T14:00:00.000Z"
+    },
+    {
+        "id": 6,
+        "name": "Laura Fernández Castro",
+        "room_number": 203,
+        "status": "Amigable",
+        "doctor": 4,
+        "meds": [1, 4],
+        "next_checkup": "2025-11-28T11:30:00.000Z"
+    }
+]

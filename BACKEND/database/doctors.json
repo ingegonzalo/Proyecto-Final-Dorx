@@ -1,1 +1,26 @@
-[]
+[
+    {
+        "id": 1,
+        "name": "Dr. María González",
+        "patients": [],
+        "appointments": []
+    },
+    {
+        "id": 2,
+        "name": "Dr. Carlos Ramírez",
+        "patients": [],
+        "appointments": []
+    },
+    {
+        "id": 3,
+        "name": "Dra. Ana Martínez",
+        "patients": [],
+        "appointments": []
+    },
+    {
+        "id": 4,
+        "name": "Dr. Luis Hernández",
+        "patients": [],
+        "appointments": []
+    }
+]
