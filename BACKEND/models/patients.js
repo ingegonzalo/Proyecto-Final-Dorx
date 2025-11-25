@@ -1,10 +1,30 @@
 const fs = require('fs');
 const path = require('path');
 const patientsPath = path.join(__dirname, '../database/patients.json');
+const medsPath = path.join(__dirname, '../database/meds.json');
+const doctorsPath = path.join(__dirname, '../database/doctors.json');
 
 function getNextPatientID(){
     const patientsD = JSON.parse(fs.readFileSync(patientsPath, 'utf-8'));
     return patientsD.length > 0 ? patientsD[patientsD.length - 1].id + 1 : 1;
+}
+
+function getMedsData(){
+    try {
+        return JSON.parse(fs.readFileSync(medsPath, 'utf-8'));
+    } catch (error) {
+        console.error('Error reading meds.json:', error);
+        return [];
+    }
+}
+
+function getDoctorsData(){
+    try {
+        return JSON.parse(fs.readFileSync(doctorsPath, 'utf-8'));
+    } catch (error) {
+        console.error('Error reading doctors.json:', error);
+        return [];
+    }
 }
 
 class PatientException {
@@ -41,12 +61,13 @@ class Patient {
     }
     toObj() {
         return {
-        id: this.getid(),
-        name: this.getname(),
-        room_number: this.getroom_number(),
-        status: this.getstatus(),
-        meds: this.getmeds(),
-        next_checkup: this.getnext_checkup()
+            id: this.getid(),
+            name: this.getname(),
+            room_number: this.getroom_number(),
+            status: this.getstatus(),
+            doctor: this.getdoctor(),
+            meds: this.getmeds(),
+            next_checkup: this.getnext_checkup()
         };
     }
     getid(){
@@ -82,7 +103,8 @@ class Patient {
         if (!Array.isArray(newMeds)) {
             throw new PatientException("Meds debe ser un arreglo");
         }
-        for(id of newMeds){
+        const medsD = getMedsData();
+        for(let id of newMeds){
             let medsFound = medsD.some(med => med.id === id);
             if (!medsFound) {
                 throw new PatientException(`Med con ID ${id} no existe`);
@@ -94,6 +116,7 @@ class Patient {
         return this.#doctor;
     }
     setdoctor(newDoctor){
+        const doctorsD = getDoctorsData();
         let doctorsFound = doctorsD.some(doctor => doctor.id === newDoctor);
         if (!doctorsFound) {
             throw new PatientException(`Doctor con ID ${newDoctor} no existe`);
@@ -104,14 +127,12 @@ class Patient {
         return this.#next_checkup;
     }
     setnext_checkup(newNextCheckup){
-        if(newNextCheckup instanceof Date){
-            this.#next_checkup = newNextCheckup;
-        } else {
-            throw new PatientException("Fecha ingresada no valida");
-        }
+        // Accept both Date objects and ISO strings
+        this.#next_checkup = newNextCheckup;
     }
 }
 
 module.exports = {
-    Patient
+    Patient,
+    PatientException
 };
