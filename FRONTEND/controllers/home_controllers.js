@@ -77,7 +77,7 @@ function loadCriticalPatients() {
     const doctorId = parseInt(sessionStorage.getItem('doctorId'));
     
     if (!doctorId) {
-        container.innerHTML = '<div class="alert alert-warning">No se pudo identificar al doctor.</div>';
+        container.innerHTML = '<div class="alert alert-warning">No se pudo identificar al paciente.</div>';
         return;
     }
 
