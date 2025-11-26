@@ -182,7 +182,7 @@ if (document.getElementById('all-meds-container')) {
                             <div class="meds-cell"><span class="badge rounded-pill bg-secondary">${med.dosage || 'N/A'}</span></div>
                             <div class="meds-cell"><span class="badge rounded-pill bg-${badgeColor}">${med.inventory} u.</span></div>
                             <div class="meds-cell actions-cell">
-                                <button class="btn btn-warning btn-sm btn-icon me-1" onclick="editMed(${med.id})"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn btn-primary btn-sm btn-icon me-1" onclick="editMed(${med.id})"><i class="fa-solid fa-pen"></i></button>
                                 <button class="btn btn-danger btn-sm btn-icon" onclick="deleteMed(${med.id})"><i class="fa-solid fa-trash"></i></button>
                             </div>
                         </div>
