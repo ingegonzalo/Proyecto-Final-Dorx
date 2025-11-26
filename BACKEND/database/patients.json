@@ -1,1 +1,20 @@
-[]
+[
+    {
+        "id": 1,
+        "name": "Juan Pérez López",
+        "room_number": 101,
+        "status": "Inestable",
+        "doctor": 1,
+        "meds": [1, 2],
+        "next_checkup": "2025-11-26T10:00:00.000Z"
+    },
+    {
+        "id": 2,
+        "name": "María Rodríguez García",
+        "room_number": 102,
+        "status": "Inestable",
+        "doctor": 2,
+        "meds": [3, 4],
+        "next_checkup": "2025-11-25T15:30:00.000Z"
+    }
+]

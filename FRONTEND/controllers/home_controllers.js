@@ -61,17 +61,27 @@ function loadUpcomingAppointments() {
 
 function loadCriticalPatients() {
     const container = document.getElementById('critical-patients-container');
+    
+    // Obtener el ID del doctor desde sessionStorage
+    const doctorId = parseInt(sessionStorage.getItem('doctorId'));
+    
+    if (!doctorId) {
+        container.innerHTML = '<div class="alert alert-warning">No se pudo identificar al doctor.</div>';
+        return;
+    }
 
     fetch('/api/patients/all')
         .then(res => res.json())
         .then(patients => {
             container.innerHTML = '';
 
-            // Filtrar pacientes que NO sean "Amigable" (Inestables o Peligrosos)
-            const criticalPatients = patients.filter(p => p.status !== 'Amigable');
+            // Filtrar pacientes que NO sean "Amigable" (Inestables o Peligrosos) Y que pertenezcan al doctor actual
+            const criticalPatients = patients.filter(p => 
+                p.status !== 'Amigable' && p.doctor === doctorId
+            );
 
             if (criticalPatients.length === 0) {
-                container.innerHTML = '<div class="alert alert-success">Todos los pacientes están estables.</div>';
+                container.innerHTML = '<div class="alert alert-success">Todos tus pacientes están estables.</div>';
                 return;
             }
 
