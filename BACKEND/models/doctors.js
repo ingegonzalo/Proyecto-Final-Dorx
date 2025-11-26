@@ -16,12 +16,16 @@ class DoctorException {
 class Doctor {
     #id;
     #name;
+    #email;
+    #password;
     #patients;
     #appointments;
 
-    constructor(name, patients = [], appointments = []){
+    constructor(name, email, password, patients = [], appointments = []){
         this.#id = getNextDoctorID();
         this.#name = name;
+        this.#email = email;
+        this.#password = password;
         if (Array.isArray(patients)) {
             this.#patients = patients;
         } else {
@@ -37,6 +41,8 @@ class Doctor {
         return {
             id: this.getid(),
             name: this.getname(),
+            email: this.getemail(),
+            password: this.getpassword(),
             patients: this.getpatients(),
             appointments: this.getappointments()
         };
@@ -47,11 +53,40 @@ class Doctor {
     getname(){
         return this.#name;
     }
+    setname(newName){
+        this.#name = newName;
+    }
+    getemail(){
+        return this.#email;
+    }
+    setemail(newEmail){
+        this.#email = newEmail;
+    }
+    getpassword(){
+        return this.#password;
+    }
+    setpassword(newPassword){
+        this.#password = newPassword;
+    }
     getpatients(){
         return this.#patients;
     }
+    setpatients(newPatients){
+        if (Array.isArray(newPatients)) {
+            this.#patients = newPatients;
+        } else {
+            throw new DoctorException("Patients debe ser un arreglo");
+        }
+    }
     getappointments(){
         return this.#appointments;
+    }
+    setappointments(newAppointments){
+        if (Array.isArray(newAppointments)) {
+            this.#appointments = newAppointments;
+        } else {
+            throw new DoctorException("Appointments debe ser un arreglo");
+        }
     }
 }
 
