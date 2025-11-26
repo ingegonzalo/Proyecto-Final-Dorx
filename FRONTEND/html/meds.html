@@ -43,7 +43,7 @@
                             <a class="nav-link" href="meds.html">Medicamentos</a>
                             <a class="nav-link" href="appointment.html">Citas</a>
                         </ul>
-                        <button class="btn btn-primary me-3" title="Agregar">
+                        <button class="btn btn-primary me-3" title="Agregar" id="addMedBtn">
                             <i class="fa-solid fa-plus"></i>
                         </button>
                         <div class="boton-modal">
@@ -69,6 +69,7 @@
                                     <div class="header-cell"><b><i class="fa-solid fa-check"></i></b></div>
                                     <div class="header-cell"><b>Medicamento</b></div>
                                     <div class="header-cell"><b>Id</b></div>
+                                    <div class="header-cell"><b>Frecuencia</b></div>
                                     <div class="header-cell"><b>Dosis</b></div>
                                     <div class="header-cell"><b>Stock</b></div>
                                     <div class="header-cell"><b>Acciones</b></div>
@@ -84,11 +85,55 @@
             </div>
         </main>
 
+        <!-- Modal Agregar Medicamento -->
+        <div class="modal fade" id="addMedModal" tabindex="-1" aria-labelledby="addMedModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="addMedModalLabel">Agregar Nuevo Medicamento</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="addMedForm">
+                            <div class="mb-3">
+                                <label for="addMedName" class="form-label">Nombre del Medicamento</label>
+                                <input type="text" class="form-control" id="addMedName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addMedDosage" class="form-label">Dosis (ej: 500mg)</label>
+                                <input type="text" class="form-control" id="addMedDosage" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addMedFrequency" class="form-label">Frecuencia (ej: cada 8 horas)</label>
+                                <input type="text" class="form-control" id="addMedFrequency" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addMedStock" class="form-label">Stock (Cantidad)</label>
+                                <input type="number" class="form-control" id="addMedStock" min="0" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addMedRiesgo" class="form-label">Riesgo</label>
+                                <select class="form-select" id="addMedRiesgo" required>
+                                    <option value="Sano">Sano</option>
+                                    <option value="Precaucion">Precaución</option>
+                                    <option value="Peligroso">Peligroso</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="saveAddMed">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Modal Editar Medicamento -->
         <div class="modal fade" id="editMedModal" tabindex="-1" aria-labelledby="editMedModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header bg-primary text-white">
                         <h5 class="modal-title" id="editMedModalLabel">Editar Medicamento</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
@@ -102,6 +147,10 @@
                             <div class="mb-3">
                                 <label for="editMedDosage" class="form-label">Dosis (ej: 500mg)</label>
                                 <input type="text" class="form-control" id="editMedDosage" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editMedFrequency" class="form-label">Frecuencia (ej: cada 8 horas)</label>
+                                <input type="text" class="form-control" id="editMedFrequency" required>
                             </div>
                             <div class="mb-3">
                                 <label for="editMedStock" class="form-label">Stock (Cantidad)</label>
@@ -129,7 +178,7 @@
         <div class="modal fade" id="deleteMedModal" tabindex="-1" aria-labelledby="deleteMedModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header bg-danger text-white">
                         <h5 class="modal-title" id="deleteMedModalLabel">Eliminar Medicamento</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>

@@ -31,18 +31,23 @@ html, body {
 }
 
 .fc-button {
-    background-color: #429ea6 !important;
+    background-color: #0d6efd !important;
     border: none !important;
     border-radius: 8px !important;
     color: white !important;
 }
 
 .fc-button:hover {
-    background-color: #337e84 !important;
+    background-color: #0b5ed7 !important;
+}
+
+.fc-button:active,
+.fc-button.fc-button-active {
+    background-color: #0a58ca !important;
 }
 
 .fc-event {
-    background-color: #429ea6 !important;
+    background-color: #0d6efd !important;
     border: none !important;
     border-radius: 6px !important;
     color: white !important;
@@ -50,6 +55,6 @@ html, body {
 }
 
 .fc-daygrid-day:hover {
-    background-color: rgba(66, 158, 166, 0.1);
+    background-color: rgba(13, 110, 253, 0.1);
     cursor: pointer;
 }

@@ -36,7 +36,7 @@
                         <a class="nav-link" href="meds.html">Medicamentos</a>
                         <a class="nav-link active" href="appointment.html">Citas</a>
                     </ul>
-                    <button class="btn btn-primary me-3" title="Agregar">
+                    <button class="btn btn-primary me-3" title="Agregar" id="addAppointmentBtn">
                         <i class="fa-solid fa-plus"></i>
                     </button>
                     <div class="boton-modal">
@@ -64,8 +64,11 @@
                 <div class="modal-body">
                     <form id="eventForm">
                         <div class="mb-3">
-                            <label for="patientName" class="form-label">Nombre del paciente</label>
-                            <input type="text" class="form-control" id="patientName" required>
+                            <label for="patientSelect" class="form-label">Paciente</label>
+                            <select class="form-select" id="patientSelect" required>
+                                <option value="">Seleccione un paciente</option>
+                                <!-- Options will be loaded dynamically -->
+                            </select>
                         </div>
                         <div class="mb-3">
                             <label for="eventDate" class="form-label">Fecha</label>
@@ -88,6 +91,26 @@
         </div>
     </div>
 
+    <!-- Modal para eliminar cita -->
+    <div class="modal fade" id="deleteEventModal" tabindex="-1" aria-labelledby="deleteEventModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteEventModalLabel">Eliminar cita</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Estás seguro de que deseas eliminar esta cita?</p>
+                    <p class="fw-bold" id="deleteEventTitle"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Borrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de logout -->
     <footer>
         <input type="checkbox" id="boton-modal" />
@@ -103,6 +126,13 @@
             </div>
         </div>
     </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.19/locales-all.global.min.js"></script>
+    <script src="../controllers/appointment_controller.js"></script>
+    <script src="../controllers/auth_controller.js"></script>
 </body>
 </html>
 

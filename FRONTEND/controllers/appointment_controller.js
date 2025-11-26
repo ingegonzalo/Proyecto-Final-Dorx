@@ -1,9 +1,73 @@
 document.addEventListener('DOMContentLoaded', function () {
     const calendarEl = document.getElementById('calendar');
     const modal = new bootstrap.Modal(document.getElementById('addEventModal'));
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteEventModal'));
     const form = document.getElementById('eventForm');
     const eventDateInput = document.getElementById('eventDate');
+    const patientSelect = document.getElementById('patientSelect');
     let selectedDate = null;
+    let patientsList = [];
+    let eventToDelete = null;
+
+    // Load patients for the current doctor
+    function loadDoctorPatients() {
+        const doctorId = parseInt(sessionStorage.getItem('doctorId'));
+        
+        if (!doctorId) return;
+
+        fetch('/api/patients/all')
+            .then(response => response.json())
+            .then(patients => {
+                // Filter only doctor's patients
+                patientsList = patients.filter(p => p.doctor === doctorId);
+                
+                // Populate select options
+                patientSelect.innerHTML = '<option value="">Seleccione un paciente</option>';
+                patientsList.forEach(patient => {
+                    const option = document.createElement('option');
+                    option.value = patient.id;
+                    option.textContent = patient.name;
+                    patientSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error loading patients:', error));
+    }
+
+    // Load patients on init
+    loadDoctorPatients();
+
+    // Confirm delete button handler
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        if (eventToDelete) {
+            fetch(`/api/appointments/${eventToDelete.id}`, {
+                method: 'DELETE'
+            })
+            .then(res => {
+                if (res.ok) {
+                    eventToDelete.remove(); // Remove from calendar
+                    deleteModal.hide();
+                    eventToDelete = null;
+                } else {
+                    alert('Error al eliminar la cita');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert('Error al eliminar la cita');
+            });
+        }
+    });
+
+    // Plus button click handler
+    const addAppointmentBtn = document.getElementById('addAppointmentBtn');
+    if (addAppointmentBtn) {
+        addAppointmentBtn.addEventListener('click', function() {
+            // Set today's date as default
+            const today = new Date().toISOString().split('T')[0];
+            eventDateInput.value = today;
+            modal.show();
+        });
+    }
 
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
@@ -21,11 +85,21 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // 1. CARGAR EVENTOS DESDE EL BACKEND
         events: function(info, successCallback, failureCallback) {
+            const doctorId = parseInt(sessionStorage.getItem('doctorId'));
+            
+            if (!doctorId) {
+                failureCallback('No se pudo identificar al doctor');
+                return;
+            }
+            
             fetch('/api/appointments/all')
                 .then(response => response.json())
                 .then(data => {
+                    // Filtrar solo las citas del doctor actual
+                    const doctorAppointments = data.filter(app => app.doctor_id === doctorId);
+                    
                     // Mapeamos los datos de tu BD al formato de FullCalendar
-                    const events = data.map(app => ({
+                    const events = doctorAppointments.map(app => ({
                         id: app.id,
                         title: app.reason || 'Cita Médica', // Mostramos la razón como título
                         start: app.date, // La fecha ISO guarda hora también
@@ -54,22 +128,14 @@ document.addEventListener('DOMContentLoaded', function () {
         eventClick: function (info) {
             info.jsEvent.preventDefault(); // Evitar navegación si fuera un link
             
-            const confirmDelete = confirm(`¿Eliminar la cita: "${info.event.title}"?`);
+            // Store event to delete
+            eventToDelete = info.event;
             
-            if (confirmDelete) {
-                fetch(`/api/appointments/${info.event.id}`, {
-                    method: 'DELETE'
-                })
-                .then(res => {
-                    if (res.ok) {
-                        info.event.remove(); // Quitar del calendario visualmente
-                        alert('Cita eliminada correctamente');
-                    } else {
-                        alert('Error al eliminar la cita');
-                    }
-                })
-                .catch(err => console.error(err));
-            }
+            // Update modal content
+            document.getElementById('deleteEventTitle').textContent = info.event.title;
+            
+            // Show delete modal
+            deleteModal.show();
         },
 
         // 3. ACTUALIZAR FECHA AL ARRASTRAR (Drag & Drop)
@@ -98,22 +164,31 @@ document.addEventListener('DOMContentLoaded', function () {
     // 4. CREAR NUEVA CITA
     form.addEventListener('submit', function (e) {
         e.preventDefault();
-        const name = document.getElementById('patientName').value.trim();
+        const patientId = parseInt(patientSelect.value);
+        const doctorId = parseInt(sessionStorage.getItem('doctorId'));
         const date = document.getElementById('eventDate').value;
         const time = document.getElementById('eventTime').value;
         const reasonInput = document.getElementById('eventReason').value.trim();
 
-        if (name && date && time) {
-            // Construimos el objeto para el Backend
-            // NOTA: Para el prototipo, usaremos IDs fijos (1) para doctor y paciente
-            // ya que el formulario HTML actual no tiene selectores de IDs.
-            // Concatenamos el nombre del paciente en la "razón" para verlo en el calendario.
+        if (!patientId) {
+            alert('Por favor selecciona un paciente');
+            return;
+        }
+
+        if (!doctorId) {
+            alert('No se pudo identificar al doctor');
+            return;
+        }
+
+        if (date && time) {
             const newAppointment = {
-                patient_id: 1, // ID existente en tu patients.json
-                doctor_id: 1,  // ID existente en tu doctors.json
+                patient_id: patientId,
+                doctor_id: doctorId,
                 date: `${date}T${time}`,
-                reason: `${name} - ${reasonInput}` 
+                reason: reasonInput || 'Consulta médica'
             };
+
+            console.log('Creando cita:', newAppointment);
 
             fetch('/api/appointments', {
                 method: 'POST',
@@ -147,6 +222,7 @@ if (document.getElementById('all-meds-container')) {
     let currentMedId = null; // ID del medicamento actual en edición/borrado
 
     // Bootstrap modals
+    const addMedModal = new bootstrap.Modal(document.getElementById('addMedModal'));
     const editModal = new bootstrap.Modal(document.getElementById('editMedModal'));
     const deleteModal = new bootstrap.Modal(document.getElementById('deleteMedModal'));
 
@@ -179,6 +255,7 @@ if (document.getElementById('all-meds-container')) {
                             </div>
                             <div class="meds-cell"><p class="patient-name mb-0">${med.name}</p></div>
                             <div class="meds-cell"><p class="patient-id mb-0">${med.id}</p></div>
+                            <div class="meds-cell"><span class="badge rounded-pill bg-info">${med.frequency || 'N/A'}</span></div>
                             <div class="meds-cell"><span class="badge rounded-pill bg-secondary">${med.dosage || 'N/A'}</span></div>
                             <div class="meds-cell"><span class="badge rounded-pill bg-${badgeColor}">${med.inventory} u.</span></div>
                             <div class="meds-cell actions-cell">
@@ -204,6 +281,7 @@ if (document.getElementById('all-meds-container')) {
         document.getElementById('editMedId').value = id;
         document.getElementById('editMedName').value = currentMed.name;
         document.getElementById('editMedDosage').value = currentMed.dosage;
+        document.getElementById('editMedFrequency').value = currentMed.frequency || '';
         document.getElementById('editMedStock').value = currentMed.inventory;
         document.getElementById('editMedRiesgo').value = currentMed.riesgo || 'Sano';
         
@@ -215,10 +293,11 @@ if (document.getElementById('all-meds-container')) {
         const id = currentMedId;
         const newName = document.getElementById('editMedName').value.trim();
         const newDosage = document.getElementById('editMedDosage').value.trim();
+        const newFrequency = document.getElementById('editMedFrequency').value.trim();
         const newInventory = parseInt(document.getElementById('editMedStock').value);
         const newRiesgo = document.getElementById('editMedRiesgo').value;
 
-        if (!newName || !newDosage || isNaN(newInventory) || newInventory < 0) {
+        if (!newName || !newDosage || !newFrequency || isNaN(newInventory) || newInventory < 0) {
             alert("Por favor completa todos los campos correctamente");
             return;
         }
@@ -226,6 +305,7 @@ if (document.getElementById('all-meds-container')) {
         const updatedData = {
             name: newName,
             dosage: newDosage,
+            frequency: newFrequency,
             inventory: newInventory,
             riesgo: newRiesgo
         };
@@ -273,6 +353,64 @@ if (document.getElementById('all-meds-container')) {
                 }
             })
             .catch(err => console.error(err));
+    });
+
+    // Función para abrir modal de agregar medicamento
+    document.getElementById('addMedBtn').addEventListener('click', function() {
+        // Limpiar formulario
+        document.getElementById('addMedForm').reset();
+        document.getElementById('addMedRiesgo').value = 'Sano'; // Default
+        addMedModal.show();
+    });
+
+    // Guardar nuevo medicamento
+    document.getElementById('saveAddMed').addEventListener('click', function() {
+        const newName = document.getElementById('addMedName').value.trim();
+        const newDosage = document.getElementById('addMedDosage').value.trim();
+        const newFrequency = document.getElementById('addMedFrequency').value.trim();
+        const newInventory = parseInt(document.getElementById('addMedStock').value);
+        const newRiesgo = document.getElementById('addMedRiesgo').value;
+
+        if (!newName || !newDosage || !newFrequency || isNaN(newInventory) || newInventory < 0) {
+            alert("Por favor completa todos los campos correctamente");
+            return;
+        }
+
+        const newMedData = {
+            name: newName,
+            dosage: newDosage,
+            frequency: newFrequency,
+            inventory: newInventory,
+            riesgo: newRiesgo
+        };
+
+        console.log('Creando medicamento:', newMedData);
+
+        fetch('/api/meds', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newMedData)
+        })
+        .then(res => {
+            console.log('Respuesta del servidor:', res.status);
+            if(res.ok) {
+                return res.json();
+            } else {
+                return res.json().then(data => {
+                    throw new Error(data.error || 'Error al crear medicamento');
+                });
+            }
+        })
+        .then(data => {
+            console.log('Medicamento creado:', data);
+            addMedModal.hide();
+            document.getElementById('addMedForm').reset();
+            loadMeds();
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            alert(err.message || 'Error al crear medicamento');
+        });
     });
 
     // Cargar medicamentos al iniciar

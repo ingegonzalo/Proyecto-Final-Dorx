@@ -1,15 +1,9 @@
 [
   {
-    "id": 1,
-    "name": "Paracetamol",
-    "dosage": "500mg",
-    "inventory": 150,
-    "riesgo": "Sano"
-  },
-  {
     "id": 2,
     "name": "Ibuprofeno",
     "dosage": "400mg",
+    "frequency": "cada 8 horas",
     "inventory": 75,
     "riesgo": "Sano"
   },
@@ -17,6 +11,7 @@
     "id": 3,
     "name": "Amoxicilina",
     "dosage": "500mg",
+    "frequency": "cada 12 horas",
     "inventory": 45,
     "riesgo": "Peligroso"
   },
@@ -24,6 +19,7 @@
     "id": 4,
     "name": "Omeprazol",
     "dosage": "20mg",
+    "frequency": "cada 24 horas",
     "inventory": 200,
     "riesgo": "Precaucion"
   },
@@ -31,7 +27,16 @@
     "id": 5,
     "name": "Losartán",
     "dosage": "50mg",
+    "frequency": "cada 12 horas",
     "inventory": 30,
     "riesgo": "Peligroso"
+  },
+  {
+    "id": 6,
+    "name": "TB500",
+    "dosage": "200cc",
+    "frequency": "Diario",
+    "inventory": 33,
+    "riesgo": "Sano"
   }
 ]

@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentPatientId = null;
 
     // Bootstrap modals
+    const addModal = new bootstrap.Modal(document.getElementById('addPatientModal'));
     const editModal = new bootstrap.Modal(document.getElementById('editPatientModal'));
     const deleteModal = new bootstrap.Modal(document.getElementById('deletePatientModal'));
     const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
@@ -201,6 +202,89 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
             .catch(err => console.error(err));
+    });
+
+    // Función para abrir modal de agregar paciente
+    document.getElementById('addPatientBtn').addEventListener('click', function() {
+        // Cargar checkboxes de medicamentos
+        const medsContainer = document.getElementById('addPatientMeds');
+        medsContainer.innerHTML = '';
+        
+        medsList.forEach(med => {
+            const checkboxDiv = document.createElement('div');
+            checkboxDiv.className = 'form-check';
+            checkboxDiv.innerHTML = `
+                <input class="form-check-input" type="checkbox" value="${med.id}" id="add-med-${med.id}">
+                <label class="form-check-label" for="add-med-${med.id}">
+                    ${med.name} (${med.dosage})
+                </label>
+            `;
+            medsContainer.appendChild(checkboxDiv);
+        });
+        
+        addModal.show();
+    });
+
+    // Guardar nuevo paciente
+    document.getElementById('saveAddPatient').addEventListener('click', function() {
+        const doctorId = parseInt(sessionStorage.getItem('doctorId'));
+        
+        if (!doctorId) {
+            showMessage("No se pudo identificar al doctor. Por favor inicia sesión nuevamente.");
+            return;
+        }
+
+        const newName = document.getElementById('addPatientName').value.trim();
+        const newStatus = document.getElementById('addPatientStatus').value;
+        const newRoom = parseInt(document.getElementById('addPatientRoom').value);
+        const newCheckup = document.getElementById('addPatientCheckup').value;
+
+        if (!newName || !newStatus || isNaN(newRoom) || !newCheckup) {
+            showMessage("Por favor completa todos los campos correctamente");
+            return;
+        }
+
+        // Obtener medicamentos seleccionados
+        const selectedMeds = Array.from(document.querySelectorAll('#addPatientMeds input[type="checkbox"]:checked'))
+            .map(cb => parseInt(cb.value));
+
+        const newPatientData = {
+            name: newName,
+            status: newStatus,
+            room_number: newRoom,
+            doctor: doctorId,
+            meds: selectedMeds,
+            next_checkup: new Date(newCheckup).toISOString()
+        };
+
+        console.log('Creando paciente:', newPatientData);
+
+        fetch('/api/patients', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newPatientData)
+        })
+        .then(res => {
+            console.log('Respuesta del servidor:', res.status);
+            if(res.ok) {
+                return res.json();
+            } else {
+                return res.json().then(data => {
+                    throw new Error(data.error || 'Error al crear paciente');
+                });
+            }
+        })
+        .then(data => {
+            console.log('Paciente creado:', data);
+            addModal.hide();
+            // Limpiar formulario
+            document.getElementById('addPatientForm').reset();
+            loadPatients();
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            showMessage(err.message || 'Error al crear paciente');
+        });
     });
 
     // Inicializar
