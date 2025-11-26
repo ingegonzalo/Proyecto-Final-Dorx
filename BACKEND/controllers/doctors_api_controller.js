@@ -34,12 +34,54 @@ function writeDoctorsToFile(doctors) {
 // CREATE - Register a new doctor
 function registerDoctor(req, res) {
     try {
-        const { name, patients = [], appointments = [] } = req.body;
+        const { name, email, password, confirm_password, patients = [], appointments = [] } = req.body;
         
         // Validate required fields
         if (!name) {
             return res.status(400).json({ 
                 error: "Campo obligatorio faltante: name" 
+            });
+        }
+
+        if (!email) {
+            return res.status(400).json({ 
+                error: "Campo obligatorio faltante: email" 
+            });
+        }
+
+        if (!password) {
+            return res.status(400).json({ 
+                error: "Campo obligatorio faltante: password" 
+            });
+        }
+
+        if (!confirm_password) {
+            return res.status(400).json({ 
+                error: "Campo obligatorio faltante: confirm_password" 
+            });
+        }
+
+        // Validate password confirmation
+        if (password !== confirm_password) {
+            return res.status(400).json({ 
+                error: "Las contraseñas no coinciden" 
+            });
+        }
+
+        // Validate email format
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ 
+                error: "Formato de email inválido" 
+            });
+        }
+
+        // Check if email already exists
+        const doctors = readDoctorsFromFile();
+        const emailExists = doctors.some(doc => doc.email === email);
+        if (emailExists) {
+            return res.status(400).json({ 
+                error: "El email ya está registrado" 
             });
         }
 
@@ -58,10 +100,7 @@ function registerDoctor(req, res) {
         }
 
         // Create new doctor instance
-        const newDoctor = new Doctor(name, patients, appointments);
-        
-        // Read current doctors
-        const doctors = readDoctorsFromFile();
+        const newDoctor = new Doctor(name, email, password, patients, appointments);
         
         // Add new doctor
         doctors.push(newDoctor.toObj());
