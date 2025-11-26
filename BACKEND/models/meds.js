@@ -19,13 +19,15 @@ class Med {
     #dosage;
     #frequency;
     #inventory;
+    #riesgo;
 
-    constructor(name, dosage, frequency, inventory){
+    constructor(name, dosage, frequency, inventory, riesgo = 'Sano'){
         this.#id = getNextMedID();
         this.#name = name;
         this.#dosage = dosage;
         this.#frequency = frequency;
         this.#inventory = inventory;
+        this.#riesgo = riesgo;
     }
     toObj(){
         return {
@@ -33,7 +35,8 @@ class Med {
             name: this.getname(),
             dosage: this.getdosage(),
             frequency: this.getfrequency(),
-            inventory: this.getinventory()
+            inventory: this.getinventory(),
+            riesgo: this.getriesgo()
         };
     }
     getid(){
@@ -62,6 +65,16 @@ class Med {
     }
     setinventory(newInventory){
         this.#inventory = newInventory;
+    }
+    getriesgo(){
+        return this.#riesgo;
+    }
+    setriesgo(newRiesgo){
+        // Validar que sea una opción válida
+        const validOptions = ['Sano', 'Precaucion', 'Peligroso'];
+        if (validOptions.includes(newRiesgo)) {
+            this.#riesgo = newRiesgo;
+        }
     }
 }
 

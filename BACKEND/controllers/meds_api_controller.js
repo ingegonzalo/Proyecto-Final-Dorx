@@ -34,7 +34,7 @@ function writeMedsToFile(meds) {
 // CREATE - Register a new medication
 function registerMed(req, res) {
     try {
-        const { name, dosage, frequency, inventory } = req.body;
+        const { name, dosage, frequency, inventory, riesgo } = req.body;
         
         // Validate required fields
         if (!name || !dosage || !frequency || inventory === undefined) {
@@ -47,6 +47,14 @@ function registerMed(req, res) {
         if (typeof inventory !== 'number' || inventory < 0) {
             return res.status(400).json({ 
                 error: "El campo 'inventory' debe ser un número mayor o igual a 0" 
+            });
+        }
+
+        // Validate riesgo if provided
+        const validRiesgo = ['Sano', 'Precaucion', 'Peligroso'];
+        if (riesgo && !validRiesgo.includes(riesgo)) {
+            return res.status(400).json({ 
+                error: "El campo 'riesgo' debe ser: Sano, Precaucion o Peligroso" 
             });
         }
 

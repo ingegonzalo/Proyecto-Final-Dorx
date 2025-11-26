@@ -6,30 +6,41 @@ document.addEventListener('DOMContentLoaded', () => {
 function loadUpcomingAppointments() {
     const container = document.getElementById('upcoming-appointments-container');
     
+    // Obtener el ID del doctor desde sessionStorage
+    const doctorId = parseInt(sessionStorage.getItem('doctorId'));
+    
+    if (!doctorId) {
+        container.innerHTML = '<div class="alert alert-warning">No se pudo identificar al doctor.</div>';
+        return;
+    }
+    
     fetch('/api/appointments/all')
         .then(res => res.json())
         .then(appointments => {
             container.innerHTML = '';
             
-            // 1. Filtrar solo citas futuras (desde hoy en adelante)
+            // 1. Filtrar solo citas del doctor actual
+            const doctorAppointments = appointments.filter(a => a.doctor_id === doctorId);
+            
+            // 2. Filtrar solo citas futuras (desde hoy en adelante)
             const now = new Date();
             // Restamos 1 día para incluir las de hoy aunque ya haya pasado la hora exacta
             now.setDate(now.getDate() - 1); 
             
-            const upcoming = appointments.filter(a => new Date(a.date) >= now);
+            const upcoming = doctorAppointments.filter(a => new Date(a.date) >= now);
 
-            // 2. Ordenar por fecha (la más cercana primero)
+            // 3. Ordenar por fecha (la más cercana primero)
             const sortedAppointments = upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
             
-            // 3. Tomar solo las próximas 5
+            // 4. Tomar solo las próximas 5
             const nextAppointments = sortedAppointments.slice(0, 5);
 
             if (nextAppointments.length === 0) {
-                container.innerHTML = '<div class="alert alert-secondary">No hay citas próximas programadas.</div>';
+                container.innerHTML = '<div class="alert alert-secondary">No tienes citas próximas programadas.</div>';
                 return;
             }
 
-            // 3. Crear tabla dinámica
+            // 5. Crear tabla dinámica
             let html = `
                 <table class="table table-hover">
                     <thead>

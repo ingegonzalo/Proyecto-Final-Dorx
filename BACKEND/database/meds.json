@@ -1,1 +1,37 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "Paracetamol",
+    "dosage": "500mg",
+    "inventory": 150,
+    "riesgo": "Sano"
+  },
+  {
+    "id": 2,
+    "name": "Ibuprofeno",
+    "dosage": "400mg",
+    "inventory": 75,
+    "riesgo": "Sano"
+  },
+  {
+    "id": 3,
+    "name": "Amoxicilina",
+    "dosage": "500mg",
+    "inventory": 45,
+    "riesgo": "Peligroso"
+  },
+  {
+    "id": 4,
+    "name": "Omeprazol",
+    "dosage": "20mg",
+    "inventory": 200,
+    "riesgo": "Precaucion"
+  },
+  {
+    "id": 5,
+    "name": "Losartán",
+    "dosage": "50mg",
+    "inventory": 30,
+    "riesgo": "Peligroso"
+  }
+]

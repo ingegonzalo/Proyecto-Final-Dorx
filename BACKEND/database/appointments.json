@@ -1,1 +1,16 @@
-[]
+[
+    {
+        "id": 1,
+        "patient_id": 1,
+        "doctor_id": 1,
+        "date": "2025-11-25T14:00:00.000Z",
+        "reason": "Revisión de estado general"
+    },
+    {
+        "id": 2,
+        "patient_id": 2,
+        "doctor_id": 2,
+        "date": "2025-11-26T10:30:00.000Z",
+        "reason": "Control de medicación"
+    }
+]

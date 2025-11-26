@@ -135,3 +135,146 @@ document.addEventListener('DOMContentLoaded', function () {
 
     calendar.render();
 });
+
+// ============================
+// MEDICATIONS MANAGEMENT
+// ============================
+
+// Check if we're on meds.html page
+if (document.getElementById('all-meds-container')) {
+    const container = document.getElementById('all-meds-container');
+    let medsList = []; // Variable para guardar los datos actuales
+    let currentMedId = null; // ID del medicamento actual en edición/borrado
+
+    // Bootstrap modals
+    const editModal = new bootstrap.Modal(document.getElementById('editMedModal'));
+    const deleteModal = new bootstrap.Modal(document.getElementById('deleteMedModal'));
+
+    function loadMeds() {
+        fetch('/api/meds/all')
+            .then(response => response.json())
+            .then(meds => {
+                medsList = meds; // Guardamos referencia global
+                container.innerHTML = '';
+                
+                if (meds.length === 0) {
+                    container.innerHTML = '<div class="alert alert-secondary">Aún no hay medicamentos</div>';
+                    return;
+                }
+                
+                meds.forEach(med => {
+                    const row = document.createElement('div');
+                    row.className = 'alert alert-info mb-1 py-2';
+                    
+                    // Determinamos color del badge según riesgo
+                    let badgeColor = 'success'; // Sano por defecto
+                    if (med.riesgo === 'Precaucion') badgeColor = 'warning';
+                    else if (med.riesgo === 'Peligroso') badgeColor = 'danger';
+                    else if (med.riesgo === 'Sano') badgeColor = 'success';
+
+                    row.innerHTML = `
+                        <div class="meds-row">
+                            <div class="meds-cell checkbox-cell">
+                                <input type="checkbox" class="form-check-input">
+                            </div>
+                            <div class="meds-cell"><p class="patient-name mb-0">${med.name}</p></div>
+                            <div class="meds-cell"><p class="patient-id mb-0">${med.id}</p></div>
+                            <div class="meds-cell"><span class="badge rounded-pill bg-secondary">${med.dosage || 'N/A'}</span></div>
+                            <div class="meds-cell"><span class="badge rounded-pill bg-${badgeColor}">${med.inventory} u.</span></div>
+                            <div class="meds-cell actions-cell">
+                                <button class="btn btn-warning btn-sm btn-icon me-1" onclick="editMed(${med.id})"><i class="fa-solid fa-pen"></i></button>
+                                <button class="btn btn-danger btn-sm btn-icon" onclick="deleteMed(${med.id})"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error cargando medicamentos:', error));
+    }
+
+    // Función para abrir modal de edición
+    window.editMed = function(id) {
+        const currentMed = medsList.find(m => m.id === id);
+        if (!currentMed) return;
+
+        currentMedId = id;
+        
+        // Llenar el formulario con los datos actuales
+        document.getElementById('editMedId').value = id;
+        document.getElementById('editMedName').value = currentMed.name;
+        document.getElementById('editMedDosage').value = currentMed.dosage;
+        document.getElementById('editMedStock').value = currentMed.inventory;
+        document.getElementById('editMedRiesgo').value = currentMed.riesgo || 'Sano';
+        
+        editModal.show();
+    };
+
+    // Guardar cambios de edición
+    document.getElementById('saveEditMed').addEventListener('click', function() {
+        const id = currentMedId;
+        const newName = document.getElementById('editMedName').value.trim();
+        const newDosage = document.getElementById('editMedDosage').value.trim();
+        const newInventory = parseInt(document.getElementById('editMedStock').value);
+        const newRiesgo = document.getElementById('editMedRiesgo').value;
+
+        if (!newName || !newDosage || isNaN(newInventory) || newInventory < 0) {
+            alert("Por favor completa todos los campos correctamente");
+            return;
+        }
+
+        const updatedData = {
+            name: newName,
+            dosage: newDosage,
+            inventory: newInventory,
+            riesgo: newRiesgo
+        };
+
+        fetch(`/api/meds/${id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedData)
+        })
+        .then(res => {
+            if(res.ok) {
+                editModal.hide();
+                loadMeds();
+            } else {
+                res.json().then(data => alert(data.error || 'Error al actualizar'));
+            }
+        })
+        .catch(err => console.error(err));
+    });
+
+    // Función para abrir modal de borrado
+    window.deleteMed = function(id) {
+        const currentMed = medsList.find(m => m.id === id);
+        if (!currentMed) return;
+
+        currentMedId = id;
+        
+        // Mostrar el nombre del medicamento a eliminar
+        document.getElementById('deleteMedName').textContent = currentMed.name;
+        
+        deleteModal.show();
+    };
+
+    // Confirmar borrado
+    document.getElementById('confirmDeleteMed').addEventListener('click', function() {
+        const id = currentMedId;
+        
+        fetch(`/api/meds/${id}`, { method: 'DELETE' })
+            .then(res => {
+                if(res.ok) {
+                    deleteModal.hide();
+                    loadMeds();
+                } else {
+                    alert('Error al eliminar');
+                }
+            })
+            .catch(err => console.error(err));
+    });
+
+    // Cargar medicamentos al iniciar
+    loadMeds();
+}

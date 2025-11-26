@@ -71,7 +71,7 @@
                                     <div class="header-cell"><b>Acciones</b></div>
                                 </div>
                             </div>
-                            <div id="all-patients-container">
+                            <div id="all-meds-container">
                             </div>
                         </div>
                     </div>
@@ -80,6 +80,68 @@
 
             </div>
         </main>
+
+        <!-- Modal Editar Medicamento -->
+        <div class="modal fade" id="editMedModal" tabindex="-1" aria-labelledby="editMedModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editMedModalLabel">Editar Medicamento</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editMedForm">
+                            <input type="hidden" id="editMedId">
+                            <div class="mb-3">
+                                <label for="editMedName" class="form-label">Nombre del Medicamento</label>
+                                <input type="text" class="form-control" id="editMedName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editMedDosage" class="form-label">Dosis (ej: 500mg)</label>
+                                <input type="text" class="form-control" id="editMedDosage" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editMedStock" class="form-label">Stock (Cantidad)</label>
+                                <input type="number" class="form-control" id="editMedStock" min="0" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editMedRiesgo" class="form-label">Riesgo</label>
+                                <select class="form-select" id="editMedRiesgo" required>
+                                    <option value="Sano">Sano</option>
+                                    <option value="Precaucion">Precaución</option>
+                                    <option value="Peligroso">Peligroso</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="saveEditMed">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Borrar Medicamento -->
+        <div class="modal fade" id="deleteMedModal" tabindex="-1" aria-labelledby="deleteMedModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deleteMedModalLabel">Eliminar Medicamento</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>¿Estás seguro de eliminar este medicamento del inventario?</p>
+                        <p class="text-muted mb-0" id="deleteMedName"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteMed">Borrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <footer>
                 <input type="checkbox" id="boton-modal" />
                 <div class="container-modal">
@@ -107,7 +169,7 @@
             integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
             crossorigin="anonymous"
         ></script>
-                <script src="../controllers/meds_controller.js"></script>
+                <script src="../controllers/appointment_controller.js"></script>
                 <script src="../controllers/auth_controller.js"></script>
     </body>
 </html>
