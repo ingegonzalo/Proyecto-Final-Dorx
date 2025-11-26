@@ -1,13 +1,1 @@
-[
-  {
-    "id": 1,
-    "name": "Luis",
-    "room_number": 23,
-    "status": "Amigable",
-    "doctor": 1,
-    "meds": [
-      1
-    ],
-    "next_checkup": "2025-11-29T18:12:00.000Z"
-  }
-]
+[]
