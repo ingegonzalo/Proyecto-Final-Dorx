@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "paracetamol",
+    "dosage": "66",
+    "frequency": "cada 12 hrs",
+    "inventory": 33,
+    "riesgo": "Sano"
+  },
+  {
+    "id": 2,
+    "name": "lol",
+    "dosage": "ii",
+    "frequency": "oo",
+    "inventory": 55,
+    "riesgo": "Peligroso"
+  }
+]

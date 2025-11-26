@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "luis",
+    "room_number": 77,
+    "status": "Amigable",
+    "doctor": 1,
+    "meds": [
+      1
+    ],
+    "next_checkup": "2025-11-28T18:30:00.000Z"
+  },
+  {
+    "id": 2,
+    "name": "rami",
+    "room_number": 99,
+    "status": "Peligroso",
+    "doctor": 1,
+    "meds": [
+      2
+    ],
+    "next_checkup": "2025-11-27T04:33:00.000Z"
+  }
+]
