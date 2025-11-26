@@ -3,12 +3,29 @@ document.addEventListener('DOMContentLoaded', () => {
     let patientsList = []; // 1. Variable para guardar los datos actuales
 
     function loadPatients() {
+        // Obtener el ID del doctor desde sessionStorage
+        const doctorId = parseInt(sessionStorage.getItem('doctorId'));
+        
+        if (!doctorId) {
+            container.innerHTML = '<div class="alert alert-warning">No se pudo identificar al doctor.</div>';
+            return;
+        }
+
         fetch('/api/patients/all')
             .then(response => response.json())
             .then(patients => {
-                patientsList = patients; // Guardamos los datos en la variable global
+                // Filtrar solo los pacientes del doctor actual
+                const doctorPatients = patients.filter(p => p.doctor === doctorId);
+                
+                patientsList = doctorPatients; // Guardamos los datos filtrados en la variable global
                 container.innerHTML = '';
-                patients.forEach(patient => {
+                
+                if (doctorPatients.length === 0) {
+                    container.innerHTML = '<div class="alert alert-info">No tienes pacientes asignados.</div>';
+                    return;
+                }
+                
+                doctorPatients.forEach(patient => {
                     const patientCard = document.createElement('div');
                     patientCard.className = 'alert alert-info mb-1 py-2';
                     patientCard.innerHTML = `
