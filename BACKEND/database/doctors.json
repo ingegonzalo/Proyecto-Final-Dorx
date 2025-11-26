@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": 1,
+    "name": "Gonzalo Celis Elizondo",
+    "email": "gonzalocelis.e@gmail.com",
+    "password": "lol",
+    "patients": [],
+    "appointments": []
+  },
+  {
+    "id": 2,
+    "name": "Gonzalo Celis Elizondo",
+    "email": "correo@mail.com",
+    "password": "lol",
+    "patients": [],
+    "appointments": []
+  }
+]

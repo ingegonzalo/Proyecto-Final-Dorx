@@ -5,6 +5,9 @@ const doctorController = require('../controllers/doctors_api_controller.js');
 // CREATE - Register new doctor
 routerDoctor.post('/', doctorController.registerDoctor);
 
+// READ - Get all doctors (root path for easy access)
+routerDoctor.get('/', doctorController.getAllDoctors);
+
 // READ - Get all doctors with pagination
 routerDoctor.get('/doctors/all', doctorController.getAllDoctorsPaginated);
 

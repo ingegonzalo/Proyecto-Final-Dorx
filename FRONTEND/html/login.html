@@ -35,42 +35,45 @@
                 <div class="d-flex justify-content-center align-items-center vh-100">
                     <div class="card" style="width:400px; margin: auto;">
                         <div class="card-body bg-white p-5 rounded-3" style="width: 400px">
-                            <form id="form_login" action="home.html"> 
+                            <form id="form_login"> 
                                 <div class="mb-3">
-                                        <label for="email" class="form-label">Correo:</label>
-                                        <input type="email" class="form-control" id="email" placeholder="Ingresa tu correo" name="email" required/>
+                                        <label for="login_email" class="form-label">Correo:</label>
+                                        <input type="email" class="form-control" id="login_email" placeholder="Ingresa tu correo" name="email" required/>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="password" class="form-label">Contraseña:</label>
-                                    <input type="password" class="form-control" id="password" placeholder="Ingresa tu contraseña" name="password" required/>
+                                    <label for="login_password" class="form-label">Contraseña:</label>
+                                    <input type="password" class="form-control" id="login_password" placeholder="Ingresa tu contraseña" name="password" required/>
                                 </div>
                                 <div class="d-grid gap-2 col-6 mx-auto">
                                     <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-                                    <button type="submit" class="btn btn-secondary" onclick="toggleForms()">Crear Cuenta</button>
+                                    <button type="button" class="btn btn-secondary" onclick="toggleForms()">Crear Cuenta</button>
                                 </div>
                             </form>
 
 
-                            <form id="form_register" action="" style="display:none;">
+                            <form id="form_register" style="display:none;">
                                 <div class="mb-3">
-                                        <label for="name" class="form-label">Nombre:</label>
-                                        <input type="name" class="form-control" id="name" placeholder="Ingresa tu nombre" name="name" required/>
+                                        <label for="register_name" class="form-label">Nombre:</label>
+                                        <input type="text" class="form-control" id="register_name" placeholder="Ingresa tu nombre" name="name" required/>
                                 </div>
                                 <div class="mb-3">
-                                        <label for="email" class="form-label">Correo:</label>
-                                        <input type="email" class="form-control" id="email" placeholder="Ingresa tu correo" name="email" required/>
+                                        <label for="register_email" class="form-label">Correo:</label>
+                                        <input type="email" class="form-control" id="register_email" placeholder="Ingresa tu correo" name="email" required/>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="password" class="form-label">Contraseña:</label>
-                                    <input type="password" class="form-control" id="password" placeholder="Ingresa tu contraseña" name="password" required/>
+                                    <label for="register_password" class="form-label">Contraseña:</label>
+                                    <input type="password" class="form-control" id="register_password" placeholder="Ingresa tu contraseña" name="password" required/>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="password" class="form-label">Confirmar Contraseña:</label>
+                                    <label for="register_confirm_password" class="form-label">Confirmar Contraseña:</label>
                                     <input type="password" class="form-control" id="confirm_Password" placeholder="Confirmar tu contraseña" name="confirm_Password" required/>
+                                    <div id="password-error" class="text-danger mt-2" style="display:none;">
+                                        <small>Las contraseñas no coinciden</small>
+                                    </div>
                                 </div>
                                 <div class="d-grid gap-2 col-6 mx-auto">
                                     <button type="submit" class="btn btn-primary">Registrarse</button>
-                                    <button type="submit" class="btn btn-secondary" onclick="toggleForms()">Iniciar Sesión</button>
+                                    <button type="button" class="btn btn-secondary" onclick="toggleForms()">Iniciar Sesión</button>
                                 </div>
                             </form>
                         </div>
