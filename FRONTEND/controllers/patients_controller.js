@@ -1,6 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('all-patients-container');
     let patientsList = []; // 1. Variable para guardar los datos actuales
+    let medsList = []; // Lista de medicamentos disponibles
+    let currentPatientId = null;
+
+    // Bootstrap modals
+    const editModal = new bootstrap.Modal(document.getElementById('editPatientModal'));
+    const deleteModal = new bootstrap.Modal(document.getElementById('deletePatientModal'));
+    const messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+
+    // Helper function to show message modal
+    function showMessage(message) {
+        document.getElementById('messageModalText').textContent = message;
+        messageModal.show();
+    }
+
+    // Cargar todos los medicamentos disponibles
+    function loadMedsList() {
+        fetch('/api/meds/all')
+            .then(response => response.json())
+            .then(meds => {
+                medsList = meds;
+            })
+            .catch(error => console.error('Error cargando medicamentos:', error));
+    }
 
     function loadPatients() {
         // Obtener el ID del doctor desde sessionStorage
@@ -57,29 +80,72 @@ document.addEventListener('DOMContentLoaded', () => {
         return 'success';
     }
 
-    // 2. Función de editar mejorada (Edita Nombre, Habitación y Estado)
+    // Función para abrir modal de edición
     window.editPatient = function(id) {
-        // Buscamos al paciente actual en nuestra lista guardada
         const currentPatient = patientsList.find(p => p.id === id);
-        
         if (!currentPatient) return;
 
-        // Pedimos los datos uno por uno, mostrando el valor actual por defecto
-        const newName = prompt("Editar Nombre:", currentPatient.name);
-        if (newName === null) return; // Si cancela, salimos
+        currentPatientId = id;
+        
+        // Llenar el formulario con los datos actuales
+        document.getElementById('editPatientId').value = id;
+        document.getElementById('editPatientName').value = currentPatient.name;
+        document.getElementById('editPatientStatus').value = currentPatient.status;
+        document.getElementById('editPatientRoom').value = currentPatient.room_number;
+        
+        // Convertir la fecha a formato datetime-local
+        const checkupDate = new Date(currentPatient.next_checkup);
+        const localDateTime = new Date(checkupDate.getTime() - (checkupDate.getTimezoneOffset() * 60000))
+            .toISOString()
+            .slice(0, 16);
+        document.getElementById('editPatientCheckup').value = localDateTime;
+        
+        // Cargar checkboxes de medicamentos
+        const medsContainer = document.getElementById('editPatientMeds');
+        medsContainer.innerHTML = '';
+        
+        medsList.forEach(med => {
+            const isChecked = currentPatient.meds.includes(med.id);
+            const checkboxDiv = document.createElement('div');
+            checkboxDiv.className = 'form-check';
+            checkboxDiv.innerHTML = `
+                <input class="form-check-input" type="checkbox" value="${med.id}" id="med-${med.id}" ${isChecked ? 'checked' : ''}>
+                <label class="form-check-label" for="med-${med.id}">
+                    ${med.name} (${med.dosage})
+                </label>
+            `;
+            medsContainer.appendChild(checkboxDiv);
+        });
+        
+        editModal.show();
+    };
 
-        const newRoom = prompt("Editar Habitación:", currentPatient.room_number);
-        if (newRoom === null) return;
+    // Guardar cambios de edición
+    document.getElementById('saveEditPatient').addEventListener('click', function() {
+        const id = currentPatientId;
+        const newName = document.getElementById('editPatientName').value.trim();
+        const newStatus = document.getElementById('editPatientStatus').value;
+        const newRoom = parseInt(document.getElementById('editPatientRoom').value);
+        const newCheckup = document.getElementById('editPatientCheckup').value;
 
-        const newStatus = prompt("Editar Estado (Amigable, Inestable, Peligroso):", currentPatient.status);
-        if (newStatus === null) return;
+        if (!newName || !newStatus || isNaN(newRoom) || !newCheckup) {
+            showMessage("Por favor completa todos los campos correctamente");
+            return;
+        }
 
-        // Creamos el objeto con los nuevos datos
+        // Obtener medicamentos seleccionados
+        const selectedMeds = Array.from(document.querySelectorAll('#editPatientMeds input[type="checkbox"]:checked'))
+            .map(cb => parseInt(cb.value));
+
         const updatedData = {
             name: newName,
+            status: newStatus,
             room_number: newRoom,
-            status: newStatus
+            meds: selectedMeds,
+            next_checkup: new Date(newCheckup).toISOString()
         };
+
+        console.log('Actualizando paciente:', id, updatedData);
 
         fetch(`/api/patients/${id}`, {
             method: 'PATCH',
@@ -87,24 +153,57 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify(updatedData)
         })
         .then(res => {
+            console.log('Respuesta del servidor:', res.status);
             if(res.ok) {
-                loadPatients();
+                return res.json();
             } else {
-                alert('Error al actualizar el paciente');
+                return res.json().then(data => {
+                    throw new Error(data.error || 'Error al actualizar');
+                });
             }
         })
+        .then(data => {
+            console.log('Paciente actualizado:', data);
+            editModal.hide();
+            loadPatients();
+        })
+        .catch(err => {
+            console.error('Error:', err);
+            showMessage(err.message || 'Error al actualizar');
+        })
         .catch(err => console.error(err));
-    };
+    });
 
+    // Función para abrir modal de borrado
     window.deletePatient = function(id) {
-        if(confirm('¿Estás seguro de eliminar este paciente?')) {
-            fetch(`/api/patients/${id}`, { method: 'DELETE' })
-                .then(res => {
-                    if(res.ok) loadPatients();
-                    else alert('Error al eliminar');
-                });
-        }
+        const currentPatient = patientsList.find(p => p.id === id);
+        if (!currentPatient) return;
+
+        currentPatientId = id;
+        
+        // Mostrar el nombre del paciente a eliminar
+        document.getElementById('deletePatientName').textContent = currentPatient.name;
+        
+        deleteModal.show();
     };
 
+    // Confirmar borrado
+    document.getElementById('confirmDeletePatient').addEventListener('click', function() {
+        const id = currentPatientId;
+        
+        fetch(`/api/patients/${id}`, { method: 'DELETE' })
+            .then(res => {
+                if(res.ok) {
+                    deleteModal.hide();
+                    loadPatients();
+                } else {
+                    showMessage('Error al eliminar');
+                }
+            })
+            .catch(err => console.error(err));
+    });
+
+    // Inicializar
+    loadMedsList();
     loadPatients();
 });

@@ -81,6 +81,92 @@
 
             </div>
         </main>
+
+        <!-- Modal Mensaje (Error/Info) -->
+        <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="messageModalLabel">Mensaje</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="messageModalText"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Borrar Paciente -->
+        <div class="modal fade" id="deletePatientModal" tabindex="-1" aria-labelledby="deletePatientModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="deletePatientModalLabel">Eliminar Paciente</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>¿Estás seguro de eliminar este paciente?</p>
+                        <p class="text-muted mb-0" id="deletePatientName"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeletePatient">Borrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Editar Paciente -->
+        <div class="modal fade" id="editPatientModal" tabindex="-1" aria-labelledby="editPatientModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editPatientModalLabel">Editar Paciente</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editPatientForm">
+                            <input type="hidden" id="editPatientId">
+                            <div class="mb-3">
+                                <label for="editPatientName" class="form-label">Nombre del Paciente</label>
+                                <input type="text" class="form-control" id="editPatientName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editPatientStatus" class="form-label">Estado</label>
+                                <select class="form-select" id="editPatientStatus" required>
+                                    <option value="Amigable">Amigable</option>
+                                    <option value="Inestable">Inestable</option>
+                                    <option value="Peligroso">Peligroso</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editPatientRoom" class="form-label">Número de Habitación</label>
+                                <input type="number" class="form-control" id="editPatientRoom" min="1" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Medicamentos</label>
+                                <div id="editPatientMeds" class="border rounded p-2" style="max-height: 150px; overflow-y: auto;">
+                                    <!-- Checkboxes will be loaded here -->
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editPatientCheckup" class="form-label">Siguiente Chequeo</label>
+                                <input type="datetime-local" class="form-control" id="editPatientCheckup" required>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="saveEditPatient">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <footer>
                 <input type="checkbox" id="boton-modal" />
                 <div class="container-modal">
