@@ -58,3 +58,12 @@ html, body {
     background-color: rgba(13, 110, 253, 0.1);
     cursor: pointer;
 }
+
+
+.fc .fc-button {
+    margin-right: 5px; /* Espacio a la derecha de cada botón */
+}
+
+.fc .fc-button:last-child {
+    margin-right: 0;
+}

@@ -6,68 +6,61 @@ document.addEventListener('DOMContentLoaded', () => {
 function loadUpcomingAppointments() {
     const container = document.getElementById('upcoming-appointments-container');
     
-    // Obtener el ID del doctor desde sessionStorage
-    const doctorId = parseInt(sessionStorage.getItem('doctorId'));
-    
-    if (!doctorId) {
-        container.innerHTML = '<div class="alert alert-warning">No se pudo identificar al doctor.</div>';
-        return;
-    }
-    
-    fetch('/api/appointments/all')
-        .then(res => res.json())
-        .then(appointments => {
-            container.innerHTML = '';
-            
-            // 1. Filtrar solo citas del doctor actual
-            const doctorAppointments = appointments.filter(a => a.doctor_id === doctorId);
-            
-            // 2. Filtrar solo citas futuras (desde hoy en adelante)
-            const now = new Date();
-            // Restamos 1 día para incluir las de hoy aunque ya haya pasado la hora exacta
-            now.setDate(now.getDate() - 1); 
-            
-            const upcoming = doctorAppointments.filter(a => new Date(a.date) >= now);
+    // Cargar AMBOS: Citas y Pacientes
+    Promise.all([
+        fetch('/api/appointments/all').then(res => res.json()),
+        fetch('/api/patients/all').then(res => res.json())
+    ])
+    .then(([appointments, patients]) => {
+        container.innerHTML = '';
+        
+        // ... lógica de filtrado de fecha existente ...
+        const now = new Date();
+        now.setDate(now.getDate() - 1);
+        
+        const upcoming = appointments.filter(a => new Date(a.date) >= now);
+        const sortedAppointments = upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
+        const nextAppointments = sortedAppointments.slice(0, 5);
 
-            // 3. Ordenar por fecha (la más cercana primero)
-            const sortedAppointments = upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
-            
-            // 4. Tomar solo las próximas 5
-            const nextAppointments = sortedAppointments.slice(0, 5);
+        if (nextAppointments.length === 0) {
+            container.innerHTML = '<div class="alert alert-secondary">No hay citas próximas.</div>';
+            return;
+        }
 
-            if (nextAppointments.length === 0) {
-                container.innerHTML = '<div class="alert alert-secondary">No tienes citas próximas programadas.</div>';
-                return;
-            }
-
-            // 5. Crear tabla dinámica
-            let html = `
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Hora</th>
-                            <th>Motivo</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            nextAppointments.forEach(app => {
-                const dateObj = new Date(app.date);
-                html += `
+        let html = `
+            <table class="table table-hover">
+                <thead>
                     <tr>
-                        <td>${dateObj.toLocaleDateString()}</td>
-                        <td>${dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</td>
-                        <td>${app.reason}</td>
+                        <th>Fecha</th>
+                        <th>Paciente</th> <!-- Nueva columna -->
+                        <th>Motivo</th>
                     </tr>
-                `;
-            });
+                </thead>
+                <tbody>
+        `;
 
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        })
-        .catch(err => console.error(err));
+        nextAppointments.forEach(app => {
+            const dateObj = new Date(app.date);
+            // Buscar el nombre del paciente usando el ID
+            const patientObj = patients.find(p => p.id === app.patient_id);
+            const patientName = patientObj ? patientObj.name : 'Desconocido';
+
+            html += `
+                <tr>
+                    <td>
+                        ${dateObj.toLocaleDateString()} <br>
+                        <small class="text-muted">${dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small>
+                    </td>
+                    <td><b>${patientName}</b></td>
+                    <td>${app.reason}</td>
+                </tr>
+            `;
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    })
+    .catch(err => console.error(err));
 }
 
 function loadCriticalPatients() {

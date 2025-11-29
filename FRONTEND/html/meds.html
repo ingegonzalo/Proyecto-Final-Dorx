@@ -69,8 +69,9 @@
                                     <div class="header-cell"><b><i class="fa-solid fa-check"></i></b></div>
                                     <div class="header-cell"><b>Medicamento</b></div>
                                     <div class="header-cell"><b>Id</b></div>
-                                    <div class="header-cell"><b>Frecuencia</b></div>
+                                    <div class="header-cell"><b>Frecuencia</b></div> <!-- AGREGADO -->
                                     <div class="header-cell"><b>Dosis</b></div>
+                                    <div class="header-cell"><b>Duración</b></div>
                                     <div class="header-cell"><b>Stock</b></div>
                                     <div class="header-cell"><b>Acciones</b></div>
                                 </div>
@@ -102,6 +103,10 @@
                             <div class="mb-3">
                                 <label for="addMedDosage" class="form-label">Dosis (ej: 500mg)</label>
                                 <input type="text" class="form-control" id="addMedDosage" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="addMedDuration" class="form-label">Duración (ej: 7 días)</label>
+                                <input type="text" class="form-control" id="addMedDuration" placeholder="Opcional">
                             </div>
                             <div class="mb-3">
                                 <label for="addMedFrequency" class="form-label">Frecuencia (ej: cada 8 horas)</label>
@@ -221,7 +226,7 @@
             integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
             crossorigin="anonymous"
         ></script>
-                <script src="../controllers/appointment_controller.js"></script>
-                <script src="../controllers/auth_controller.js"></script>
+        <script src="../controllers/meds_controller.js"></script>
+        <script src="../controllers/auth_controller.js"></script>
     </body>
 </html>

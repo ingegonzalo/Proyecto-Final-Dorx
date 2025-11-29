@@ -93,11 +93,21 @@ function registerAppointment(req, res) {
             });
         }
 
+        const appointments = readAppointmentsFromFile();
+        const newDate = new Date(date).getTime();
+
+        // Buscar si ya existe una cita para ese doctor a la misma hora exacta
+        const conflict = appointments.find(app => {
+            const existingDate = new Date(app.date).getTime();
+            return app.doctor_id === doctor_id && existingDate === newDate;
+        });
+
+        if (conflict) {
+            return res.status(409).json({ error: 'Horario no disponible. Ya existe una cita a esta hora.' });
+        }
+
         // Create new appointment instance
         const newAppointment = new Appointment(patient_id, doctor_id, date, reason);
-        
-        // Read current appointments
-        const appointments = readAppointmentsFromFile();
         
         // Add new appointment
         appointments.push(newAppointment.toObj());

@@ -34,7 +34,7 @@ function writeMedsToFile(meds) {
 // CREATE - Register a new medication
 function registerMed(req, res) {
     try {
-        const { name, dosage, frequency, inventory, riesgo } = req.body;
+        const { name, dosage, frequency, inventory, riesgo, duration } = req.body;
         
         // Validate required fields
         if (!name || !dosage || !frequency || inventory === undefined) {
@@ -59,7 +59,7 @@ function registerMed(req, res) {
         }
 
         // Create new med instance
-        const newMed = new Med(name, dosage, frequency, inventory);
+        const newMed = new Med(name, dosage, frequency, inventory, duration, riesgo);
         
         // Read current meds
         const meds = readMedsFromFile();

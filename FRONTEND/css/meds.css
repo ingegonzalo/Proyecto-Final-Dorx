@@ -4,44 +4,64 @@
     background-image: linear-gradient(to top, #429ea6, #B0B2B8);
 }
 
-/* Unified grid layout for meds header and rows */
+/* HEADER: 8 columnas fijas */
 .meds-header{
-    display:grid;
-    grid-template-columns:48px repeat(5, 1fr) 96px;
-    align-items:center;
-    column-gap:8px;
+    display: grid;
+    grid-template-columns: 48px 1.2fr 0.6fr 1fr 0.8fr 1fr 0.8fr 120px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 10px;
 }
-.meds-header .header-cell{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height:32px;
-}
-.meds-header .header-cell:first-child{ justify-content:flex-start; }
-.meds-header .header-cell:last-child{ justify-content:center; }
 
+.meds-header .header-cell{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    font-weight: bold;
+}
+
+.meds-header .header-cell:first-child{ 
+    justify-content: flex-start; 
+}
+
+/* FILAS: Misma estructura de 8 columnas */
 .meds-row{
-    display:grid;
-    grid-template-columns:48px repeat(5, 1fr) 96px;
-    align-items:center;
-    column-gap:8px;
+    display: grid;
+    grid-template-columns: 48px 1.2fr 0.6fr 1fr 0.8fr 1fr 0.8fr 120px;
+    align-items: center;
+    gap: 8px;
+    padding: 0 10px;
 }
-.meds-row .meds-cell{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height:32px;
+
+.meds-row > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
 }
-.meds-row .meds-cell.checkbox-cell{ justify-content:flex-start; }
-.meds-row .meds-cell.actions-cell{ gap:8px; justify-content:center; }
-.meds-row .meds-cell.actions-cell button{ flex:1 1 auto; }
+
+/* Primera columna (checkbox) alineada a la izquierda */
+.meds-row > div:nth-child(1) {
+    justify-content: flex-start;
+}
+
+/* Última columna (acciones) con espacio para botones */
+.meds-row > div:nth-child(8) {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
 
 /* Icon button styles */
 .btn-icon{
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    padding:6px 10px;
-    line-height:1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 10px;
+    line-height: 1;
 }
-.btn-icon i{ pointer-events:none; }
+
+.btn-icon i{ 
+    pointer-events: none; 
+}

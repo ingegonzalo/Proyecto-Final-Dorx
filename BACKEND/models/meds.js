@@ -20,23 +20,27 @@ class Med {
     #frequency;
     #inventory;
     #riesgo;
+    #duration;
 
-    constructor(name, dosage, frequency, inventory, riesgo = 'Sano'){
+    constructor(name, dosage, frequency, inventory, duration, riesgo = 'Sano'){
         this.#id = getNextMedID();
         this.#name = name;
         this.#dosage = dosage;
         this.#frequency = frequency;
         this.#inventory = inventory;
+        this.#duration = duration || 'N/A';
         this.#riesgo = riesgo;
     }
+
     toObj(){
         return {
-            id: this.getid(),
-            name: this.getname(),
-            dosage: this.getdosage(),
-            frequency: this.getfrequency(),
-            inventory: this.getinventory(),
-            riesgo: this.getriesgo()
+            id: this.#id,
+            name: this.#name,
+            dosage: this.#dosage,
+            frequency: this.#frequency,
+            inventory: this.#inventory,
+            duration: this.#duration,
+            riesgo: this.#riesgo
         };
     }
     getid(){
@@ -76,6 +80,10 @@ class Med {
             this.#riesgo = newRiesgo;
         }
     }
+    getduration() { 
+        return this.#duration; }
+    setduration(newDuration) { 
+        this.#duration = newDuration; }
 }
 
 module.exports = {
