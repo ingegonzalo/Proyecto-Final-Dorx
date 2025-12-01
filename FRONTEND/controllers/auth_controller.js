@@ -39,10 +39,6 @@ async function handleLogin(event) {
         console.error('Error:', error);
         alert('Error al intentar iniciar sesión. Por favor intenta nuevamente.');
     }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('Error al intentar iniciar sesión. Por favor intenta nuevamente.');
-    }
 }
 
 // Validate password match in real-time
