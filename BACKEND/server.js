@@ -1,7 +1,11 @@
 const express = require('express');
 const path = require('path');
 const router = require('./routes/api.js');
+require('dotenv').config();
 const app = express();
+// Initialize MongoDB connection (Mongoose)
+const connectDB = require('./database/database.js');
+connectDB();
 const port = 3000;
 
 app.use(express.json());

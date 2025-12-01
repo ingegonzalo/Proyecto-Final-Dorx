@@ -1,6 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const { Patient } = require('../models/patients');
+let PatientModel = null;
+try {
+    PatientModel = require('../models/mongoose/patient.model');
+    console.log('Using Mongoose model for Patients');
+} catch (err) {
+    console.log('Mongoose Patient model not available - falling back to JSON files');
+}
 const patientsPath = path.join(__dirname, '../database/patients.json');
 
 class PatientControllerException {
@@ -20,7 +27,7 @@ function readPatientsFromFile() {
     }
 }
 
-// Helper function to write patients to file
+            const { name, room_number, status, doctor, meds, next_checkup } = req.body; 
 function writePatientToFile(patients) {
     try {
         fs.writeFileSync(patientsPath, JSON.stringify(patients, null, 2), 'utf-8');
@@ -32,7 +39,7 @@ function writePatientToFile(patients) {
 }
 
 // CREATE - Register a new patient
-function registerPatient(req, res) {
+async function registerPatient(req, res) {
     try {
         const { name, room_number, status, doctor, meds = [], next_checkup } = req.body;
         
@@ -58,6 +65,14 @@ function registerPatient(req, res) {
             });
         }
 
+        if (PatientModel) {
+            // Assign numeric incremental id compatible with JSON
+            const last = await PatientModel.findOne().sort({ id: -1 }).lean().exec();
+            const nextId = last && last.id ? last.id + 1 : 1;
+            const created = await PatientModel.create({ id: nextId, name, room_number, status, doctor, meds, next_checkup });
+            return res.status(201).json({ message: 'Paciente registrado exitosamente', patient: created });
+        }
+
         // Create new patient instance
         const newPatient = new Patient(name, room_number, status, doctor, meds, next_checkup);
         
@@ -72,10 +87,7 @@ function registerPatient(req, res) {
             return res.status(500).json({ error: "Error al guardar el paciente" });
         }
 
-        return res.status(201).json({
-            message: "Paciente registrado exitosamente",
-            patient: newPatient.toObj()
-        });
+        return res.status(201).json({ message: "Paciente registrado exitosamente", patient: newPatient.toObj() });
     } catch (error) {
         console.error('Error in registerPatient:', error);
         if (error.errorMessage) {
@@ -86,8 +98,17 @@ function registerPatient(req, res) {
 }
 
 // READ - Get all patients with pagination
-function getAllPatientsPaginated(req, res) {
+async function getAllPatientsPaginated(req, res) {
     try {
+        if (PatientModel) {
+            const total = await PatientModel.countDocuments();
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            const startIndex = (page - 1) * limit;
+            const data = await PatientModel.find().skip(startIndex).limit(limit).lean().exec();
+            return res.status(200).json({ page, limit, total, totalPages: Math.ceil(total/limit), data });
+        }
+
         const patients = readPatientsFromFile();
         
         // Get pagination parameters
@@ -113,8 +134,12 @@ function getAllPatientsPaginated(req, res) {
 }
 
 // READ - Get all patients (no pagination)
-function getAllPatients(req, res) {
+async function getAllPatients(req, res) {
     try {
+        if (PatientModel) {
+            const data = await PatientModel.find().lean().exec();
+            return res.status(200).json(data);
+        }
         const patients = readPatientsFromFile();
         return res.status(200).json(patients);
     } catch (error) {
@@ -124,7 +149,7 @@ function getAllPatients(req, res) {
 }
 
 // READ - Get patient by ID
-function getPatientByID(req, res) {
+async function getPatientByID(req, res) {
     try {
         const id = parseInt(req.params.id);
         
@@ -132,6 +157,11 @@ function getPatientByID(req, res) {
             return res.status(400).json({ error: "ID de paciente inválido" });
         }
 
+        if (PatientModel) {
+            const patient = await PatientModel.findOne({ id: id }).lean().exec();
+            if (!patient) return res.status(404).json({ error: `Paciente con ID ${id} no encontrado` });
+            return res.status(200).json(patient);
+        }
         const patients = readPatientsFromFile();
         const patient = patients.find(p => p.id === id);
 
@@ -156,6 +186,24 @@ function updatePatient(req, res) {
         }
 
         const { name, room_number, status, doctor, meds, next_checkup } = req.body;
+
+        if (PatientModel) {
+            const { name, room_number, status, doctor, meds, next_checkup } = req.body;
+            if (status) {
+                const validStatuses = ["Amigable", "Peligroso", "Inestable"];
+                if (!validStatuses.includes(status)) {
+                    return res.status(400).json({ error: `Status inválido. Valores permitidos: ${validStatuses.join(', ')}` });
+                }
+            }
+            if (meds !== undefined && !Array.isArray(meds)) {
+                return res.status(400).json({ error: "El campo 'meds' debe ser un arreglo de IDs de medicamentos" });
+            }
+            const updateObj = { name, room_number, status, doctor, meds, next_checkup };
+            Object.keys(updateObj).forEach(k => updateObj[k] === undefined && delete updateObj[k]);
+            const updated = await PatientModel.findOneAndUpdate({ id: id }, updateObj, { new: true }).lean().exec();
+            if (!updated) return res.status(404).json({ error: `Paciente con ID ${id} no encontrado` });
+            return res.status(200).json({ message: 'Paciente actualizado exitosamente', patient: updated });
+        }
 
         // Read current patients
         const patients = readPatientsFromFile();
@@ -221,6 +269,12 @@ function deletePatient(req, res) {
         
         if (isNaN(id)) {
             return res.status(400).json({ error: "ID de paciente inválido" });
+        }
+
+        if (PatientModel) {
+            const deleted = await PatientModel.findOneAndDelete({ id: id }).lean().exec();
+            if (!deleted) return res.status(404).json({ error: `Paciente con ID ${id} no encontrado` });
+            return res.status(200).json({ message: 'Paciente eliminado exitosamente', patient: deleted });
         }
 
         // Read current patients

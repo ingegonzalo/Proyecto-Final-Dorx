@@ -1,6 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const { Med } = require('../models/meds');
+let MedModel = null;
+try {
+    MedModel = require('../models/mongoose/med.model');
+    console.log('Using Mongoose model for Meds');
+} catch (err) {
+    console.log('Mongoose Med model not available - falling back to JSON files');
+}
 const medsPath = path.join(__dirname, '../database/meds.json');
 
 class MedsControllerException {
@@ -32,7 +39,7 @@ function writeMedsToFile(meds) {
 }
 
 // CREATE - Register a new medication
-function registerMed(req, res) {
+async function registerMed(req, res) {
     try {
         const { name, dosage, frequency, inventory, riesgo, duration } = req.body;
         
@@ -58,6 +65,13 @@ function registerMed(req, res) {
             });
         }
 
+        if (MedModel) {
+            const last = await MedModel.findOne().sort({ id: -1 }).lean().exec();
+            const nextId = last && last.id ? last.id + 1 : 1;
+            const created = await MedModel.create({ id: nextId, name, dosage, frequency, inventory, duration, riesgo });
+            return res.status(201).json({ message: 'Medicamento registrado exitosamente', med: created });
+        }
+
         // Create new med instance
         const newMed = new Med(name, dosage, frequency, inventory, duration, riesgo);
         
@@ -72,10 +86,7 @@ function registerMed(req, res) {
             return res.status(500).json({ error: "Error al guardar el medicamento" });
         }
 
-        return res.status(201).json({
-            message: "Medicamento registrado exitosamente",
-            med: newMed.toObj()
-        });
+        return res.status(201).json({ message: "Medicamento registrado exitosamente", med: newMed.toObj() });
     } catch (error) {
         console.error('Error in registerMed:', error);
         if (error.errorMessage) {
@@ -86,8 +97,16 @@ function registerMed(req, res) {
 }
 
 // READ - Get all meds with pagination
-function getAllMedsPaginated(req, res) {
+async function getAllMedsPaginated(req, res) {
     try {
+        if (MedModel) {
+            const total = await MedModel.countDocuments();
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            const startIndex = (page - 1) * limit;
+            const data = await MedModel.find().skip(startIndex).limit(limit).lean().exec();
+            return res.status(200).json({ page, limit, total, totalPages: Math.ceil(total/limit), data });
+        }
         const meds = readMedsFromFile();
         
         // Get pagination parameters
@@ -113,8 +132,12 @@ function getAllMedsPaginated(req, res) {
 }
 
 // READ - Get all meds (no pagination)
-function getAllMeds(req, res) {
+async function getAllMeds(req, res) {
     try {
+        if (MedModel) {
+            const data = await MedModel.find().lean().exec();
+            return res.status(200).json(data);
+        }
         const meds = readMedsFromFile();
         return res.status(200).json(meds);
     } catch (error) {
@@ -124,7 +147,7 @@ function getAllMeds(req, res) {
 }
 
 // READ - Get med by ID
-function getMedByID(req, res) {
+async function getMedByID(req, res) {
     try {
         const id = parseInt(req.params.id);
         
@@ -132,6 +155,11 @@ function getMedByID(req, res) {
             return res.status(400).json({ error: "ID de medicamento inválido" });
         }
 
+        if (MedModel) {
+            const med = await MedModel.findOne({ id: id }).lean().exec();
+            if (!med) return res.status(404).json({ error: `Medicamento con ID ${id} no encontrado` });
+            return res.status(200).json(med);
+        }
         const meds = readMedsFromFile();
         const med = meds.find(m => m.id === id);
 
@@ -147,7 +175,7 @@ function getMedByID(req, res) {
 }
 
 // UPDATE - Update med by ID
-function updateMed(req, res) {
+async function updateMed(req, res) {
     try {
         const id = parseInt(req.params.id);
         
@@ -156,6 +184,18 @@ function updateMed(req, res) {
         }
 
         const { name, dosage, frequency, inventory } = req.body;
+
+        if (MedModel) {
+            const { name, dosage, frequency, inventory } = req.body;
+            if (inventory !== undefined && (typeof inventory !== 'number' || inventory < 0)) {
+                return res.status(400).json({ error: "El campo 'inventory' debe ser un número mayor o igual a 0" });
+            }
+            const updateObj = { name, dosage, frequency, inventory };
+            Object.keys(updateObj).forEach(k => updateObj[k] === undefined && delete updateObj[k]);
+            const updated = await MedModel.findOneAndUpdate({ id: id }, updateObj, { new: true }).lean().exec();
+            if (!updated) return res.status(404).json({ error: `Medicamento con ID ${id} no encontrado` });
+            return res.status(200).json({ message: 'Medicamento actualizado exitosamente', med: updated });
+        }
 
         // Read current meds
         const meds = readMedsFromFile();
@@ -203,12 +243,18 @@ function updateMed(req, res) {
 }
 
 // DELETE - Delete med by ID
-function deleteMed(req, res) {
+async function deleteMed(req, res) {
     try {
         const id = parseInt(req.params.id);
         
         if (isNaN(id)) {
             return res.status(400).json({ error: "ID de medicamento inválido" });
+        }
+
+        if (MedModel) {
+            const deleted = await MedModel.findOneAndDelete({ id: id }).lean().exec();
+            if (!deleted) return res.status(404).json({ error: `Medicamento con ID ${id} no encontrado` });
+            return res.status(200).json({ message: 'Medicamento eliminado exitosamente', med: deleted });
         }
 
         // Read current meds
@@ -238,7 +284,7 @@ function deleteMed(req, res) {
 }
 
 // PATCH - Partial update
-function patchMed(req, res) {
+async function patchMed(req, res) {
     try {
         const id = parseInt(req.params.id);
         
@@ -251,6 +297,17 @@ function patchMed(req, res) {
         // Don't allow ID updates
         if (updates.id !== undefined) {
             return res.status(400).json({ error: "No se puede modificar el ID del medicamento" });
+        }
+
+        if (MedModel) {
+            const updates = req.body;
+            if (updates.id !== undefined) return res.status(400).json({ error: "No se puede modificar el ID del medicamento" });
+            if (updates.inventory !== undefined && (typeof updates.inventory !== 'number' || updates.inventory < 0)) {
+                return res.status(400).json({ error: "El campo 'inventory' debe ser un número mayor o igual a 0" });
+            }
+            const updated = await MedModel.findOneAndUpdate({ id: id }, updates, { new: true }).lean().exec();
+            if (!updated) return res.status(404).json({ error: `Medicamento con ID ${id} no encontrado` });
+            return res.status(200).json({ message: 'Medicamento actualizado exitosamente', med: updated });
         }
 
         // Read current meds
@@ -294,9 +351,16 @@ function patchMed(req, res) {
 }
 
 // SEARCH - Filter meds by criteria
-function searchMeds(req, res) {
+async function searchMeds(req, res) {
     try {
         const { name, dosage } = req.query;
+        if (MedModel) {
+            const query = {};
+            if (name) query.name = new RegExp(name, 'i');
+            if (dosage) query.dosage = new RegExp(dosage, 'i');
+            const data = await MedModel.find(query).lean().exec();
+            return res.status(200).json({ total: data.length, data });
+        }
         let meds = readMedsFromFile();
 
         // Apply filters

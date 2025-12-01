@@ -1,6 +1,17 @@
 const fs = require('fs');
 const path = require('path');
 const { Appointment } = require('../models/appointments');
+let AppointmentModel = null;
+let PatientModel = null;
+let DoctorModel = null;
+try {
+    AppointmentModel = require('../models/mongoose/appointment.model');
+    PatientModel = require('../models/mongoose/patient.model');
+    DoctorModel = require('../models/mongoose/doctor.model');
+    console.log('⚡️ Using Mongoose models for Appointments/Patients/Doctors');
+} catch (err) {
+    console.log('Mongoose models not available for appointments - falling back to JSON files');
+}
 const appointmentsPath = path.join(__dirname, '../database/appointments.json');
 const patientsPath = path.join(__dirname, '../database/patients.json');
 const doctorsPath = path.join(__dirname, '../database/doctors.json');
@@ -68,7 +79,7 @@ function validateDoctorExists(doctor_id) {
 }
 
 // CREATE - Register a new appointment
-function registerAppointment(req, res) {
+async function registerAppointment(req, res) {
     try {
         const { patient_id, doctor_id, date, reason } = req.body;
         
@@ -80,19 +91,48 @@ function registerAppointment(req, res) {
         }
 
         // Validate patient exists
-        if (!validatePatientExists(patient_id)) {
-            return res.status(404).json({ 
-                error: `Paciente con ID ${patient_id} no encontrado` 
-            });
+        if (PatientModel) {
+            const patientExists = await PatientModel.findOne({ id: patient_id }).lean().exec();
+            if (!patientExists) {
+                return res.status(404).json({ error: `Paciente con ID ${patient_id} no encontrado` });
+            }
+        } else {
+            if (!validatePatientExists(patient_id)) {
+                return res.status(404).json({ 
+                    error: `Paciente con ID ${patient_id} no encontrado` 
+                });
+            }
         }
 
         // Validate doctor exists
-        if (!validateDoctorExists(doctor_id)) {
-            return res.status(404).json({ 
-                error: `Doctor con ID ${doctor_id} no encontrado` 
-            });
+        if (DoctorModel) {
+            const doctorExists = await DoctorModel.findOne({ id: doctor_id }).lean().exec();
+            if (!doctorExists) {
+                return res.status(404).json({ error: `Doctor con ID ${doctor_id} no encontrado` });
+            }
+        } else {
+            if (!validateDoctorExists(doctor_id)) {
+                return res.status(404).json({ 
+                    error: `Doctor con ID ${doctor_id} no encontrado` 
+                });
+            }
         }
 
+        // If Mongoose is available, use it to create and check conflicts
+        if (AppointmentModel) {
+            const newDateISO = new Date(date);
+            const conflict = await AppointmentModel.findOne({ doctor_id: doctor_id, date: newDateISO }).lean().exec();
+            if (conflict) {
+                return res.status(409).json({ error: 'Horario no disponible. Ya existe una cita a esta hora.' });
+            }
+            // Compute next numeric ID to keep compatibility with JSON DB (incremental)
+            const last = await AppointmentModel.findOne().sort({ id: -1 }).lean().exec();
+            const nextId = last && last.id ? last.id + 1 : 1;
+            const created = await AppointmentModel.create({ id: nextId, patient_id, doctor_id, date: newDateISO, reason });
+            return res.status(201).json({ message: 'Cita registrada exitosamente', appointment: created });
+        }
+
+        // Fallback to file-based storage
         const appointments = readAppointmentsFromFile();
         const newDate = new Date(date).getTime();
 
@@ -131,8 +171,17 @@ function registerAppointment(req, res) {
 }
 
 // READ - Get all appointments with pagination
-function getAllAppointmentsPaginated(req, res) {
+async function getAllAppointmentsPaginated(req, res) {
     try {
+        if (AppointmentModel) {
+            const total = await AppointmentModel.countDocuments();
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            const startIndex = (page - 1) * limit;
+            const data = await AppointmentModel.find().skip(startIndex).limit(limit).lean().exec();
+            return res.status(200).json({ page, limit, total, totalPages: Math.ceil(total/limit), data });
+        }
+
         const appointments = readAppointmentsFromFile();
         
         // Get pagination parameters
@@ -158,8 +207,12 @@ function getAllAppointmentsPaginated(req, res) {
 }
 
 // READ - Get all appointments (no pagination)
-function getAllAppointments(req, res) {
+async function getAllAppointments(req, res) {
     try {
+        if (AppointmentModel) {
+            const data = await AppointmentModel.find().lean().exec();
+            return res.status(200).json(data);
+        }
         const appointments = readAppointmentsFromFile();
         return res.status(200).json(appointments);
     } catch (error) {
@@ -169,7 +222,7 @@ function getAllAppointments(req, res) {
 }
 
 // READ - Get appointment by ID
-function getAppointmentByID(req, res) {
+async function getAppointmentByID(req, res) {
     try {
         const id = parseInt(req.params.id);
         
@@ -177,6 +230,11 @@ function getAppointmentByID(req, res) {
             return res.status(400).json({ error: "ID de cita inválido" });
         }
 
+        if (AppointmentModel) {
+            const appointment = await AppointmentModel.findOne({ id: id }).lean().exec();
+            if (!appointment) return res.status(404).json({ error: `Cita con ID ${id} no encontrada` });
+            return res.status(200).json(appointment);
+        }
         const appointments = readAppointmentsFromFile();
         const appointment = appointments.find(a => a.id === id);
 
@@ -192,7 +250,7 @@ function getAppointmentByID(req, res) {
 }
 
 // UPDATE - Update appointment by ID
-function updateAppointment(req, res) {
+async function updateAppointment(req, res) {
     try {
         const id = parseInt(req.params.id);
         
@@ -203,6 +261,30 @@ function updateAppointment(req, res) {
         const { patient_id, doctor_id, date, reason } = req.body;
 
         // Read current appointments
+        if (AppointmentModel) {
+            // Using Mongoose for full update (PUT) - replace fields
+            const { patient_id, doctor_id, date, reason } = req.body;
+            if (patient_id !== undefined && PatientModel) {
+                const patientExists = await PatientModel.findOne({ id: patient_id }).lean().exec();
+                if (!patientExists) return res.status(404).json({ error: `Paciente con ID ${patient_id} no encontrado` });
+            }
+            if (doctor_id !== undefined && DoctorModel) {
+                const doctorExists = await DoctorModel.findOne({ id: doctor_id }).lean().exec();
+                if (!doctorExists) return res.status(404).json({ error: `Doctor con ID ${doctor_id} no encontrado` });
+            }
+            const updateObj = {
+                patient_id: patient_id !== undefined ? patient_id : undefined,
+                doctor_id: doctor_id !== undefined ? doctor_id : undefined,
+                date: date !== undefined ? new Date(date) : undefined,
+                reason: reason !== undefined ? reason : undefined
+            };
+            // Remove undefined fields
+            Object.keys(updateObj).forEach(k => updateObj[k] === undefined && delete updateObj[k]);
+            const updated = await AppointmentModel.findOneAndUpdate({ id: id }, updateObj, { new: true }).lean().exec();
+            if (!updated) return res.status(404).json({ error: `Cita con ID ${id} no encontrada` });
+            return res.status(200).json({ message: 'Cita actualizada exitosamente', appointment: updated });
+        }
+
         const appointments = readAppointmentsFromFile();
         const appointmentIndex = appointments.findIndex(a => a.id === id);
 
@@ -255,12 +337,18 @@ function updateAppointment(req, res) {
 }
 
 // DELETE - Delete appointment by ID
-function deleteAppointment(req, res) {
+async function deleteAppointment(req, res) {
     try {
         const id = parseInt(req.params.id);
         
         if (isNaN(id)) {
             return res.status(400).json({ error: "ID de cita inválido" });
+        }
+
+        if (AppointmentModel) {
+            const deleted = await AppointmentModel.findOneAndDelete({ id: id }).lean().exec();
+            if (!deleted) return res.status(404).json({ error: `Cita con ID ${id} no encontrada` });
+            return res.status(200).json({ message: 'Cita eliminada exitosamente', appointment: deleted });
         }
 
         // Read current appointments
@@ -290,7 +378,7 @@ function deleteAppointment(req, res) {
 }
 
 // PATCH - Partial update
-function patchAppointment(req, res) {
+async function patchAppointment(req, res) {
     try {
         const id = parseInt(req.params.id);
         
@@ -306,6 +394,22 @@ function patchAppointment(req, res) {
         }
 
         // Read current appointments
+        if (AppointmentModel) {
+            const updates = req.body;
+            if (updates.patient_id !== undefined && PatientModel) {
+                const patientExists = await PatientModel.findOne({ id: updates.patient_id }).lean().exec();
+                if (!patientExists) return res.status(404).json({ error: `Paciente con ID ${updates.patient_id} no encontrado` });
+            }
+            if (updates.doctor_id !== undefined && DoctorModel) {
+                const doctorExists = await DoctorModel.findOne({ id: updates.doctor_id }).lean().exec();
+                if (!doctorExists) return res.status(404).json({ error: `Doctor con ID ${updates.doctor_id} no encontrado` });
+            }
+            if (updates.date) updates.date = new Date(updates.date);
+            const updated = await AppointmentModel.findOneAndUpdate({ id: id }, updates, { new: true }).lean().exec();
+            if (!updated) return res.status(404).json({ error: `Cita con ID ${id} no encontrada` });
+            return res.status(200).json({ message: 'Cita actualizada exitosamente', appointment: updated });
+        }
+
         const appointments = readAppointmentsFromFile();
         const appointmentIndex = appointments.findIndex(a => a.id === id);
 
@@ -353,9 +457,23 @@ function patchAppointment(req, res) {
 }
 
 // SEARCH - Filter appointments by criteria
-function searchAppointments(req, res) {
+async function searchAppointments(req, res) {
     try {
         const { patient_id, doctor_id, date } = req.query;
+        if (AppointmentModel) {
+            const query = {};
+            if (patient_id) query.patient_id = parseInt(patient_id);
+            if (doctor_id) query.doctor_id = parseInt(doctor_id);
+            if (date) {
+                const start = new Date(date);
+                const end = new Date(date);
+                end.setDate(end.getDate() + 1);
+                query.date = { $gte: start, $lt: end };
+            }
+            const data = await AppointmentModel.find(query).lean().exec();
+            return res.status(200).json({ total: data.length, data });
+        }
+
         let appointments = readAppointmentsFromFile();
 
         // Apply filters
