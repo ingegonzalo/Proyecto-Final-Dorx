@@ -1,7 +1,12 @@
 const express = require('express');
 const path = require('path');
 const router = require('./routes/api.js');
-require('dotenv').config();
+try {
+    // dotenv is optional here; if missing, continue without crash
+    require('dotenv').config();
+} catch (err) {
+    console.warn('dotenv not installed; continuing without .env');
+}
 const app = express();
 // Initialize MongoDB connection (Mongoose)
 const connectDB = require('./database/database.js');

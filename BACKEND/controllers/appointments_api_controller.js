@@ -209,12 +209,15 @@ async function getAllAppointmentsPaginated(req, res) {
 // READ - Get all appointments (no pagination)
 async function getAllAppointments(req, res) {
     try {
+        const doctorId = req.query.doctor_id ? parseInt(req.query.doctor_id) : null;
         if (AppointmentModel) {
-            const data = await AppointmentModel.find().lean().exec();
+            const q = doctorId ? { doctor_id: doctorId } : {};
+            const data = await AppointmentModel.find(q).lean().exec();
             return res.status(200).json(data);
         }
         const appointments = readAppointmentsFromFile();
-        return res.status(200).json(appointments);
+        const filtered = doctorId ? appointments.filter(a => a.doctor_id === doctorId) : appointments;
+        return res.status(200).json(filtered);
     } catch (error) {
         console.error('Error in getAllAppointments:', error);
         return res.status(500).json({ error: "Error al obtener las citas" });

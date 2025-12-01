@@ -27,7 +27,6 @@ function readPatientsFromFile() {
     }
 }
 
-            const { name, room_number, status, doctor, meds, next_checkup } = req.body; 
 function writePatientToFile(patients) {
     try {
         fs.writeFileSync(patientsPath, JSON.stringify(patients, null, 2), 'utf-8');
@@ -136,12 +135,15 @@ async function getAllPatientsPaginated(req, res) {
 // READ - Get all patients (no pagination)
 async function getAllPatients(req, res) {
     try {
+        const queryDoctor = req.query.doctor ? parseInt(req.query.doctor) : null;
         if (PatientModel) {
-            const data = await PatientModel.find().lean().exec();
+            const q = queryDoctor ? { doctor: queryDoctor } : {};
+            const data = await PatientModel.find(q).lean().exec();
             return res.status(200).json(data);
         }
         const patients = readPatientsFromFile();
-        return res.status(200).json(patients);
+        const filtered = queryDoctor ? patients.filter(p => p.doctor === queryDoctor) : patients;
+        return res.status(200).json(filtered);
     } catch (error) {
         console.error('Error in getAllPatients:', error);
         return res.status(500).json({ error: "Error al obtener los pacientes" });
@@ -177,7 +179,7 @@ async function getPatientByID(req, res) {
 }
 
 // UPDATE - Update patient by ID
-function updatePatient(req, res) {
+async function updatePatient(req, res) {
     try {
         const id = parseInt(req.params.id);
         
@@ -263,7 +265,7 @@ function updatePatient(req, res) {
 }
 
 // DELETE - Delete patient by ID
-function deletePatient(req, res) {
+async function deletePatient(req, res) {
     try {
         const id = parseInt(req.params.id);
         
@@ -304,7 +306,7 @@ function deletePatient(req, res) {
 }
 
 // PATCH - Partial update (similar to PUT but explicitly for partial updates)
-function patchPatient(req, res) {
+async function patchPatient(req, res) {
     try {
         const id = parseInt(req.params.id);
         
@@ -317,6 +319,22 @@ function patchPatient(req, res) {
         // Don't allow ID updates
         if (updates.id !== undefined) {
             return res.status(400).json({ error: "No se puede modificar el ID del paciente" });
+        }
+
+        if (PatientModel) {
+            if (updates.id !== undefined) return res.status(400).json({ error: "No se puede modificar el ID del paciente" });
+            if (updates.status) {
+                const validStatuses = ["Amigable", "Peligroso", "Inestable"];
+                if (!validStatuses.includes(updates.status)) {
+                    return res.status(400).json({ error: `Status inválido. Valores permitidos: ${validStatuses.join(', ')}` });
+                }
+            }
+            if (updates.meds !== undefined && !Array.isArray(updates.meds)) {
+                return res.status(400).json({ error: "El campo 'meds' debe ser un arreglo de IDs de medicamentos" });
+            }
+            const updated = await PatientModel.findOneAndUpdate({ id: id }, updates, { new: true }).lean().exec();
+            if (!updated) return res.status(404).json({ error: `Paciente con ID ${id} no encontrado` });
+            return res.status(200).json({ message: 'Paciente actualizado exitosamente', patient: updated });
         }
 
         // Read current patients

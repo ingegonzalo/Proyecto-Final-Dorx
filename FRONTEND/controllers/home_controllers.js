@@ -7,9 +7,10 @@ function loadUpcomingAppointments() {
     const container = document.getElementById('upcoming-appointments-container');
     
     // Cargar AMBOS: Citas y Pacientes
+    const doctorId = parseInt(sessionStorage.getItem('doctorId'));
     Promise.all([
-        fetch('/api/appointments/all').then(res => res.json()),
-        fetch('/api/patients/all').then(res => res.json())
+        fetch(`/api/appointments/all?doctor_id=${doctorId}`).then(res => res.json()),
+        fetch(`/api/patients/all?doctor=${doctorId}`).then(res => res.json())
     ])
     .then(([appointments, patients]) => {
         container.innerHTML = '';
@@ -74,7 +75,7 @@ function loadCriticalPatients() {
         return;
     }
 
-    fetch('/api/patients/all')
+    fetch(`/api/patients/all?doctor=${doctorId}`)
         .then(res => res.json())
         .then(patients => {
             container.innerHTML = '';

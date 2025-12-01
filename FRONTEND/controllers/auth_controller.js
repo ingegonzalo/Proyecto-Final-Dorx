@@ -21,29 +21,24 @@ async function handleLogin(event) {
     const password = document.getElementById('login_password').value;
 
     try {
-        // Fetch all doctors from the API
-        const response = await fetch(API_URL);
-        
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
         if (!response.ok) {
-            throw new Error('Error al conectar con el servidor');
+            alert('Correo y/o Contrasena Incorrectos');
+            return;
         }
-
-        const doctors = await response.json();
-        
-        // Find doctor with matching email and password
-        const doctor = doctors.find(doc => doc.email === email && doc.password === password);
-        
-        if (doctor) {
-            // Store doctor info in sessionStorage
-            sessionStorage.setItem('doctorId', doctor.id);
-            sessionStorage.setItem('doctorName', doctor.name);
-            sessionStorage.setItem('doctorEmail', doctor.email);
-            
-            // Redirect to home
-            window.location.href = 'home.html';
-        } else {
-            alert('Correo y/o Contraseña Incorrectos');
-        }
+        const doctor = await response.json();
+        sessionStorage.setItem('doctorId', doctor.id);
+        sessionStorage.setItem('doctorName', doctor.name || '');
+        sessionStorage.setItem('doctorEmail', doctor.email || '');
+        window.location.href = 'home.html';
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al intentar iniciar sesión. Por favor intenta nuevamente.');
+    }
     } catch (error) {
         console.error('Error:', error);
         alert('Error al intentar iniciar sesión. Por favor intenta nuevamente.');
@@ -92,7 +87,7 @@ async function handleRegister(event) {
         };
 
         // Send POST request to create doctor
-        const response = await fetch(API_URL, {
+        const response = await fetch('/api/register', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

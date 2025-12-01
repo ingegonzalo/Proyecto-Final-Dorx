@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         if (!doctorId) return;
 
-        fetch('/api/patients/all')
+        fetch(`/api/patients/all?doctor=${doctorId}`)
             .then(response => response.json())
             .then(patients => {
                 // Filter only doctor's patients
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 return;
             }
             
-            fetch('/api/appointments/all')
+            fetch(`/api/appointments/all?doctor_id=${doctorId}`)
                 .then(response => response.json())
                 .then(data => {
                     // Filtrar solo las citas del doctor actual

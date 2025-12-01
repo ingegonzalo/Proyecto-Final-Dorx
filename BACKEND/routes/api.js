@@ -4,6 +4,7 @@ const routerApi = express.Router();
 
 const routerPatient = require('./patient.js');
 const routerDoctor = require('./doctor.js');
+const doctorController = require('../controllers/doctors_api_controller.js');
 const routerAppointment = require('./appointment.js');
 const routerMeds = require('./med.js');
 
@@ -41,5 +42,9 @@ routerApi.get('/appointment.html', (req, res) => {
 routerApi.get('/meds.html', (req, res) => {
     res.sendFile(path.resolve(__dirname + '/../../FRONTEND/html/meds.html'));
 });
+
+// Authentication endpoints for frontend compatibility (/login,/register)
+routerApi.post('/register', doctorController.registerDoctor);
+routerApi.post('/login', doctorController.loginDoctor);
 
 module.exports = routerApi;

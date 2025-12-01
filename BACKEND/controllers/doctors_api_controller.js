@@ -1,6 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const { Doctor } = require('../models/doctors');
+let DoctorModel = null;
+try {
+    DoctorModel = require('../models/mongoose/doctor.model');
+    console.log('⚡️ Using Mongoose model for Doctors');
+} catch (err) {
+    console.log('ℹ️ Mongoose Doctor model not available - falling back to JSON files');
+}
 const doctorsPath = path.join(__dirname, '../database/doctors.json');
 
 class DoctorsControllerException {
@@ -32,7 +39,7 @@ function writeDoctorsToFile(doctors) {
 }
 
 // CREATE - Register a new doctor
-function registerDoctor(req, res) {
+async function registerDoctor(req, res) {
     try {
         const { name, email, password, confirm_password, patients = [], appointments = [] } = req.body;
         
@@ -77,12 +84,19 @@ function registerDoctor(req, res) {
         }
 
         // Check if email already exists
-        const doctors = readDoctorsFromFile();
-        const emailExists = doctors.some(doc => doc.email === email);
-        if (emailExists) {
-            return res.status(400).json({ 
-                error: "El email ya está registrado" 
-            });
+        if (DoctorModel) {
+            const emailExists = await DoctorModel.findOne({ email }).lean().exec();
+            if (emailExists) {
+                return res.status(400).json({ error: "El email ya está registrado" });
+            }
+        } else {
+            const doctors = readDoctorsFromFile();
+            const emailExists = doctors.some(doc => doc.email === email);
+            if (emailExists) {
+                return res.status(400).json({ 
+                    error: "El email ya está registrado" 
+                });
+            }
         }
 
         // Validate patients is an array
@@ -99,6 +113,14 @@ function registerDoctor(req, res) {
             });
         }
 
+        if (DoctorModel) {
+            // assign numeric id
+            const last = await DoctorModel.findOne().sort({ id: -1 }).lean().exec();
+            const nextId = last && last.id ? last.id + 1 : 1;
+            const created = await DoctorModel.create({ id: nextId, name, email, password, patients, appointments });
+            return res.status(201).json({ message: "Doctor registrado exitosamente", doctor: created });
+        }
+
         // Create new doctor instance
         const newDoctor = new Doctor(name, email, password, patients, appointments);
         
@@ -110,10 +132,7 @@ function registerDoctor(req, res) {
             return res.status(500).json({ error: "Error al guardar el doctor" });
         }
 
-        return res.status(201).json({
-            message: "Doctor registrado exitosamente",
-            doctor: newDoctor.toObj()
-        });
+        return res.status(201).json({ message: "Doctor registrado exitosamente", doctor: newDoctor.toObj() });
     } catch (error) {
         console.error('Error in registerDoctor:', error);
         if (error.errorMessage) {
@@ -123,9 +142,40 @@ function registerDoctor(req, res) {
     }
 }
 
-// READ - Get all doctors with pagination
-function getAllDoctorsPaginated(req, res) {
+// LOGIN - Authenticate doctor
+async function loginDoctor(req, res) {
     try {
+        const { email, password } = req.body;
+        if (!email || !password) return res.status(400).json({ error: 'Email y password requeridos' });
+
+        if (DoctorModel) {
+            const doc = await DoctorModel.findOne({ email: email, password: password }).lean().exec();
+            if (!doc) return res.status(401).json({ error: 'Credenciales inválidas' });
+            return res.status(200).json(doc);
+        }
+
+        const doctors = readDoctorsFromFile();
+        const found = doctors.find(d => d.email === email && d.password === password);
+        if (!found) return res.status(401).json({ error: 'Credenciales inválidas' });
+        return res.status(200).json(found);
+    } catch (error) {
+        console.error('Error in loginDoctor:', error);
+        return res.status(500).json({ error: 'Error interno' });
+    }
+}
+
+// READ - Get all doctors with pagination
+async function getAllDoctorsPaginated(req, res) {
+    try {
+        if (DoctorModel) {
+            const total = await DoctorModel.countDocuments();
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 10;
+            const startIndex = (page - 1) * limit;
+            const data = await DoctorModel.find().skip(startIndex).limit(limit).lean().exec();
+            return res.status(200).json({ page, limit, total, totalPages: Math.ceil(total/limit), data });
+        }
+
         const doctors = readDoctorsFromFile();
         
         // Get pagination parameters
@@ -151,8 +201,12 @@ function getAllDoctorsPaginated(req, res) {
 }
 
 // READ - Get all doctors (no pagination)
-function getAllDoctors(req, res) {
+async function getAllDoctors(req, res) {
     try {
+        if (DoctorModel) {
+            const data = await DoctorModel.find().lean().exec();
+            return res.status(200).json(data);
+        }
         const doctors = readDoctorsFromFile();
         return res.status(200).json(doctors);
     } catch (error) {
@@ -162,7 +216,7 @@ function getAllDoctors(req, res) {
 }
 
 // READ - Get doctor by ID
-function getDoctorByID(req, res) {
+async function getDoctorByID(req, res) {
     try {
         const id = parseInt(req.params.id);
         
@@ -170,6 +224,11 @@ function getDoctorByID(req, res) {
             return res.status(400).json({ error: "ID de doctor inválido" });
         }
 
+        if (DoctorModel) {
+            const doctor = await DoctorModel.findOne({ id: id }).lean().exec();
+            if (!doctor) return res.status(404).json({ error: `Doctor con ID ${id} no encontrado` });
+            return res.status(200).json(doctor);
+        }
         const doctors = readDoctorsFromFile();
         const doctor = doctors.find(d => d.id === id);
 
@@ -185,7 +244,7 @@ function getDoctorByID(req, res) {
 }
 
 // UPDATE - Update doctor by ID
-function updateDoctor(req, res) {
+async function updateDoctor(req, res) {
     try {
         const id = parseInt(req.params.id);
         
@@ -194,6 +253,21 @@ function updateDoctor(req, res) {
         }
 
         const { name, patients, appointments } = req.body;
+
+        if (DoctorModel) {
+            const { name, patients, appointments } = req.body;
+            if (patients !== undefined && !Array.isArray(patients)) {
+                return res.status(400).json({ error: "El campo 'patients' debe ser un arreglo de IDs de pacientes" });
+            }
+            if (appointments !== undefined && !Array.isArray(appointments)) {
+                return res.status(400).json({ error: "El campo 'appointments' debe ser un arreglo de IDs de citas" });
+            }
+            const updateObj = { name, patients, appointments };
+            Object.keys(updateObj).forEach(k => updateObj[k] === undefined && delete updateObj[k]);
+            const updated = await DoctorModel.findOneAndUpdate({ id: id }, updateObj, { new: true }).lean().exec();
+            if (!updated) return res.status(404).json({ error: `Doctor con ID ${id} no encontrado` });
+            return res.status(200).json({ message: 'Doctor actualizado exitosamente', doctor: updated });
+        }
 
         // Read current doctors
         const doctors = readDoctorsFromFile();
@@ -247,12 +321,18 @@ function updateDoctor(req, res) {
 }
 
 // DELETE - Delete doctor by ID
-function deleteDoctor(req, res) {
+async function deleteDoctor(req, res) {
     try {
         const id = parseInt(req.params.id);
         
         if (isNaN(id)) {
             return res.status(400).json({ error: "ID de doctor inválido" });
+        }
+
+        if (DoctorModel) {
+            const deleted = await DoctorModel.findOneAndDelete({ id: id }).lean().exec();
+            if (!deleted) return res.status(404).json({ error: `Doctor con ID ${id} no encontrado` });
+            return res.status(200).json({ message: 'Doctor eliminado exitosamente', doctor: deleted });
         }
 
         // Read current doctors
@@ -282,7 +362,7 @@ function deleteDoctor(req, res) {
 }
 
 // PATCH - Partial update
-function patchDoctor(req, res) {
+async function patchDoctor(req, res) {
     try {
         const id = parseInt(req.params.id);
         
@@ -295,6 +375,16 @@ function patchDoctor(req, res) {
         // Don't allow ID updates
         if (updates.id !== undefined) {
             return res.status(400).json({ error: "No se puede modificar el ID del doctor" });
+        }
+
+        if (DoctorModel) {
+            const updates = req.body;
+            if (updates.id !== undefined) return res.status(400).json({ error: "No se puede modificar el ID del doctor" });
+            if (updates.patients !== undefined && !Array.isArray(updates.patients)) return res.status(400).json({ error: "El campo 'patients' debe ser un arreglo de IDs de pacientes" });
+            if (updates.appointments !== undefined && !Array.isArray(updates.appointments)) return res.status(400).json({ error: "El campo 'appointments' debe ser un arreglo de IDs de citas" });
+            const updated = await DoctorModel.findOneAndUpdate({ id: id }, updates, { new: true }).lean().exec();
+            if (!updated) return res.status(404).json({ error: `Doctor con ID ${id} no encontrado` });
+            return res.status(200).json({ message: 'Doctor actualizado exitosamente', doctor: updated });
         }
 
         // Read current doctors
@@ -345,9 +435,15 @@ function patchDoctor(req, res) {
 }
 
 // SEARCH - Filter doctors by criteria
-function searchDoctors(req, res) {
+async function searchDoctors(req, res) {
     try {
         const { name } = req.query;
+        if (DoctorModel) {
+            const query = {};
+            if (name) query.name = new RegExp(name, 'i');
+            const data = await DoctorModel.find(query).lean().exec();
+            return res.status(200).json({ total: data.length, data });
+        }
         let doctors = readDoctorsFromFile();
 
         // Apply filters
@@ -357,10 +453,7 @@ function searchDoctors(req, res) {
             );
         }
 
-        return res.status(200).json({
-            total: doctors.length,
-            data: doctors
-        });
+        return res.status(200).json({ total: doctors.length, data: doctors });
     } catch (error) {
         console.error('Error in searchDoctors:', error);
         return res.status(500).json({ error: "Error al buscar doctores" });
@@ -376,4 +469,6 @@ module.exports = {
     deleteDoctor,
     patchDoctor,
     searchDoctors
+    ,
+    loginDoctor
 };

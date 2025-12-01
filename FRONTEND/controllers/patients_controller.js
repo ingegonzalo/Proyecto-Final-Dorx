@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        fetch('/api/patients/all')
+        fetch(`/api/patients/all?doctor=${doctorId}`)
             .then(response => response.json())
             .then(patients => {
                 // Filtrar solo los pacientes del doctor actual
@@ -257,15 +257,14 @@ document.addEventListener('DOMContentLoaded', () => {
             next_checkup: new Date(newCheckup).toISOString()
         };
 
-        console.log('Creando paciente:', newPatientData);
+        // Creating patient (request will be sent to the backend)
 
         fetch('/api/patients', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newPatientData)
         })
-        .then(res => {
-            console.log('Respuesta del servidor:', res.status);
+            .then(res => {
             if(res.ok) {
                 return res.json();
             } else {
@@ -275,7 +274,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         })
         .then(data => {
-            console.log('Paciente creado:', data);
             addModal.hide();
             // Limpiar formulario
             document.getElementById('addPatientForm').reset();
