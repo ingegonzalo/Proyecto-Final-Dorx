@@ -1,15 +1,33 @@
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('all-patients-container') || document.getElementById('all-meds-container');
     let medsList = [];
+    let currentEditId = null; // Para guardar el ID del medicamento que se está editando
 
+    // Modal de Agregar
     const addModalEl = document.getElementById('addMedModal');
     let addModal = null;
     if (addModalEl) {
         addModal = new bootstrap.Modal(addModalEl);
     }
+
+    // Modal de Editar
+    const editModalEl = document.getElementById('editMedModal');
+    let editModal = null;
+    if (editModalEl) {
+        editModal = new bootstrap.Modal(editModalEl);
+    }
+
+    // Modal de Eliminar
+    const deleteModalEl = document.getElementById('deleteMedModal');
+    let deleteModal = null;
+    if (deleteModalEl) {
+        deleteModal = new bootstrap.Modal(deleteModalEl);
+    }
     
     const addMedBtn = document.getElementById('addMedBtn');
     const saveAddMedBtn = document.getElementById('saveAddMed');
+    const saveEditMedBtn = document.getElementById('saveEditMed');
+    const confirmDeleteMedBtn = document.getElementById('confirmDeleteMed');
 
     function loadMeds() {
         if (!container) return; 
@@ -109,54 +127,90 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentMed = medsList.find(m => m.id === id);
         if (!currentMed) return;
 
-        const newName = prompt("Editar Nombre del Medicamento:", currentMed.name);
-        if (newName === null) return;
+        currentEditId = id; // Guardamos el ID para usarlo al guardar
 
-        const newDosage = prompt("Editar Dosis (ej: 500mg):", currentMed.dosage);
-        if (newDosage === null) return;
+        // Llenar los campos del modal con los datos actuales
+        document.getElementById('editMedId').value = id;
+        document.getElementById('editMedName').value = currentMed.name || '';
+        document.getElementById('editMedDosage').value = currentMed.dosage || '';
+        document.getElementById('editMedFrequency').value = currentMed.frequency || '';
+        document.getElementById('editMedStock').value = currentMed.inventory || 0;
+        document.getElementById('editMedRiesgo').value = currentMed.riesgo || 'Sano';
 
-        const newDuration = prompt("Editar Duración (ej: 7 días, 20 tomas):", currentMed.duration);
-        if (newDuration === null) return;
-
-        let newInventory = prompt("Editar Stock (Cantidad):", currentMed.inventory);
-        if (newInventory === null) return;
-        
-        newInventory = parseInt(newInventory);
-        if (isNaN(newInventory) || newInventory < 0) {
-            alert("El stock debe ser un número válido mayor o igual a 0");
-            return;
+        // Mostrar el modal
+        if (editModal) {
+            editModal.show();
         }
-
-        const updatedData = { name: newName, dosage: newDosage, duration: newDuration, inventory: newInventory };
-
-        fetch(`/api/meds/${id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(updatedData)
-        })
-        .then(res => {
-            if(res.ok) {
-                loadMeds();
-            } else {
-                res.json().then(data => alert(data.error || 'Error al actualizar'));
-            }
-        })
-        .catch(err => console.error(err));
     };
 
+    // Guardar cambios del modal de edición
+    if (saveEditMedBtn) {
+        saveEditMedBtn.addEventListener('click', () => {
+            const id = currentEditId;
+            const name = document.getElementById('editMedName').value;
+            const dosage = document.getElementById('editMedDosage').value;
+            const frequency = document.getElementById('editMedFrequency').value;
+            const inventory = parseInt(document.getElementById('editMedStock').value);
+            const riesgo = document.getElementById('editMedRiesgo').value;
+
+            if (!name || !dosage || !frequency || isNaN(inventory)) {
+                alert("Por favor completa los campos obligatorios");
+                return;
+            }
+
+            const updatedData = { name, dosage, frequency, inventory, riesgo };
+
+            fetch(`/api/meds/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updatedData)
+            })
+            .then(res => {
+                if (res.ok) {
+                    editModal.hide();
+                    loadMeds();
+                } else {
+                    res.json().then(data => alert(data.error || 'Error al actualizar'));
+                }
+            })
+            .catch(err => console.error(err));
+        });
+    }
+
     window.deleteMed = function(id) {
-        if(confirm('¿Estás seguro de eliminar este medicamento del inventario?')) {
+        const currentMed = medsList.find(m => m.id === id);
+        if (!currentMed) return;
+
+        currentEditId = id; // Reutilizamos la variable para el ID a eliminar
+        
+        // Mostrar nombre del medicamento en el modal de confirmación
+        const deleteNameEl = document.getElementById('deleteMedName');
+        if (deleteNameEl) {
+            deleteNameEl.textContent = `Medicamento: ${currentMed.name}`;
+        }
+
+        if (deleteModal) {
+            deleteModal.show();
+        }
+    };
+
+    // Confirmar eliminación desde el modal
+    if (confirmDeleteMedBtn) {
+        confirmDeleteMedBtn.addEventListener('click', () => {
+            const id = currentEditId;
+
             fetch(`/api/meds/${id}`, { method: 'DELETE' })
                 .then(res => {
-                    if(res.ok) {
+                    if (res.ok) {
+                        deleteModal.hide();
                         loadMeds();
                     } else {
                         res.json().then(data => alert(data.error || 'Error al eliminar'));
                     }
                 })
                 .catch(error => console.error('Error de red:', error));
-        }
-    };
+        });
+    }
 
     loadMeds();
 });
