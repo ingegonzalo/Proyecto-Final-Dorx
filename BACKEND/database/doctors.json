@@ -1,18 +1,1 @@
-[
-  {
-    "id": 1,
-    "name": "Gonzalo",
-    "email": "correo@mail.com",
-    "password": "lol",
-    "patients": [],
-    "appointments": []
-  },
-  {
-    "id": 2,
-    "name": "Gonzalo",
-    "email": "dorx@mail.com",
-    "password": "lol",
-    "patients": [],
-    "appointments": []
-  }
-]
+[]
