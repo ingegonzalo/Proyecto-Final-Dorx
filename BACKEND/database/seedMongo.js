@@ -1,5 +1,5 @@
 const connectDB = require('./database');
-
+//revision de datos iniciales
 async function seed() {
   try {
     await connectDB();
